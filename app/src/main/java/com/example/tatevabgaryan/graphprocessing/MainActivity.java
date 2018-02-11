@@ -19,10 +19,10 @@ import java.util.TreeSet;
 
 public class MainActivity extends AppCompatActivity {
 
-    public static final int SCALE = 5;
-    public static final int NODE_RADIUS = 11;
-    public static final int APPROXIMATION_RADIUS = 30;
-    public static final int NODE_POINT_DISTANCE = 200;
+    public static final int SCALE = 10;
+    public static final int NODE_RADIUS = 5;
+    public static final int APPROXIMATION_RADIUS = 15;
+    public static final int NODE_POINT_DISTANCE = 100;
     public static final int ISLAND_POINT_DISTANCE = 400;
 
     @Override
@@ -38,13 +38,13 @@ public class MainActivity extends AppCompatActivity {
 
         Graph graph = new Graph();
         TreeSet<Point> contour = processGraph.getContourFromBitmap(bm);
-        graph.setNodes(processGraph.findGraphNodes(contour));
-        graph.setEdges(processGraph.findEdges(graph.getNodes(), contour));
-      //  List<Island> islands = processGraph.findIslands(contour);
+        //graph.setNodes(processGraph.findGraphNodes(contour));
+        //graph.setEdges(processGraph.findEdges(graph.getNodes(), contour));
+        List<Island> islands = processGraph.findIslands(contour);
         ImageView imageView = (ImageView)findViewById(R.id.image_view);
         //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(contour));
-        imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getNodes()));
-        //TreeSet<Point> islandPoints = islands.get(0).getPoints();
-      //  imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(contour));
+        //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getNodes()));
+        TreeSet<Point> islandPoints = islands.get(2).getPoints();
+        imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(islandPoints));
     }
 }
