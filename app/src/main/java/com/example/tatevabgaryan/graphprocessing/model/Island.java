@@ -1,5 +1,7 @@
 package com.example.tatevabgaryan.graphprocessing.model;
 
+import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
+
 import java.util.TreeSet;
 
 /**
@@ -8,6 +10,10 @@ import java.util.TreeSet;
 
 public class Island {
     TreeSet<Point> points;
+
+    public Island(){
+        points = new TreeSet<>(new PointComparator());
+    }
 
     public Island(TreeSet<Point> points) {
         this.points = points;

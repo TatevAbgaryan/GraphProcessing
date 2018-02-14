@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.helper.BitmapHelper;
+import com.example.tatevabgaryan.graphprocessing.model.Contour;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
@@ -23,7 +24,6 @@ public class MainActivity extends AppCompatActivity {
     public static final int NODE_RADIUS = 5;
     public static final int APPROXIMATION_RADIUS = 15;
     public static final int NODE_POINT_DISTANCE = 100;
-    public static final int ISLAND_POINT_DISTANCE = 400;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,14 +37,15 @@ public class MainActivity extends AppCompatActivity {
         BitmapContext.setWidth(bm.getWidth()/SCALE);
 
         Graph graph = new Graph();
-        TreeSet<Point> contour = processGraph.getContourFromBitmap(bm);
-        //graph.setNodes(processGraph.findGraphNodes(contour));
+        Contour contour = processGraph.getContourFromBitmap(bm);
+        TreeSet<Point> contourPoints = contour.getPoints();
+        graph.setNodes(processGraph.findGraphNodes(contourPoints));
         //graph.setEdges(processGraph.findEdges(graph.getNodes(), contour));
         List<Island> islands = processGraph.findIslands(contour);
         ImageView imageView = (ImageView)findViewById(R.id.image_view);
         //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(contour));
         //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getNodes()));
-        TreeSet<Point> islandPoints = islands.get(2).getPoints();
-        imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(islandPoints));
+       // TreeSet<Point> islandPoints = islands.get(2).getPoints();
+        imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(islands.get(2).getPoints()));
     }
 }

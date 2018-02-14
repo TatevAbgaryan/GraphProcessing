@@ -2,6 +2,7 @@ package com.example.tatevabgaryan.graphprocessing.process;
 
 import android.graphics.Bitmap;
 
+import com.example.tatevabgaryan.graphprocessing.model.Contour;
 import com.example.tatevabgaryan.graphprocessing.model.Edge;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
@@ -16,13 +17,13 @@ import java.util.TreeSet;
 
 public interface ProcessGraphI {
 
-    public TreeSet<Point> getContourFromBitmap(Bitmap bitmap);
+    public Contour getContourFromBitmap(Bitmap bitmap);
 
     public TreeSet<Point> findGraphNodes(TreeSet<Point> contour);
 
     public List<Edge> findEdges(TreeSet<Point> nodes, TreeSet<Point> contour);
 
-    public List<Island> findIslands(TreeSet<Point> contour);
+    public List<Island> findIslands(Contour contour);
 
     // ...
 }
