@@ -18,8 +18,10 @@ import java.util.TreeSet;
 public class BitmapHelper {
 
     public Bitmap createBitmapFromPoint(TreeSet<Point> contour) {
-//        contour = new TreeSet<>(new PointComparatorOrigin());
-//        contour.add(new Point(337, 473));
+//        contour = new TreeSet<>(new PointComparator());
+//        contour.add(new Point(276, 215));
+//        contour.add(new Point(383, 47));
+
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
         image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth(), BitmapContext.getHeight(), true);
         for (int x = 0; x < image.getWidth(); x++) {
@@ -94,31 +96,18 @@ public class BitmapHelper {
     }
 
     public int getDistanceOfPoints(Point p1, Point p2) {
-        return (p2.getX() - p1.getX()) * (p2.getX() - p1.getX()) + (p2.getY() - p1.getY()) * (p2.getY() - p1.getY());
+        return (int)(Math.sqrt((p2.getX() - p1.getX()) * (p2.getX() - p1.getX()) + (p2.getY() - p1.getY()) * (p2.getY() - p1.getY())));
     }
 
     public boolean isNode(Point p, TreeSet<Point> contour) {
-        Point checkPoint = new Point(p.getX(), p.getY());
+        int rowNbr[] = new int[]{-1, -1, -1, 0, 0, 1, 1, 1};
+        int colNbr[] = new int[]{-1, 0, 1, -1, 1, -1, 0, 1};
         for (int i = 1; i <= MainActivity.NODE_RADIUS; i++) {
-            checkPoint.setX(p.getX() + i);
-            checkPoint.setY(p.getY() + i);
-            if (!contour.contains(checkPoint)) {
-                return false;
-            }
-            checkPoint.setX(p.getX() - i);
-            checkPoint.setY(p.getY() + i);
-            if (!contour.contains(checkPoint)) {
-                return false;
-            }
-            checkPoint.setX(p.getX() + i);
-            checkPoint.setY(p.getY() - i);
-            if (!contour.contains(checkPoint)) {
-                return false;
-            }
-            checkPoint.setX(p.getX() - i);
-            checkPoint.setY(p.getY() - i);
-            if (!contour.contains(checkPoint)) {
-                return false;
+            for (int j = 0; j<rowNbr.length; j++){
+                Point checkP = new Point(p.getX() + i*rowNbr[j], p.getY() + i*colNbr[j]);
+                if(!contour.contains(checkP)){
+                  return false;
+                }
             }
         }
         return true;
