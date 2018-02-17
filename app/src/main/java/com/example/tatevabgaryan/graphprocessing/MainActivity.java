@@ -6,9 +6,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 
-import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.helper.BitmapHelper;
+import com.example.tatevabgaryan.graphprocessing.helper.OCRHelper;
 import com.example.tatevabgaryan.graphprocessing.model.Contour;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
@@ -25,30 +25,29 @@ public class MainActivity extends AppCompatActivity {
     public static final int APPROXIMATION_RADIUS = 15;
     public static final int NODE_POINT_DISTANCE = 20;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        ImageView imageView = (ImageView)findViewById(R.id.image_view);
+
         BitmapHelper bitmapHelper = new BitmapHelper();
         ProcessGraph processGraph = new ProcessGraph();
+        OCRHelper ocrHelper = new OCRHelper();
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.graph_numbers);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.graph_s_numbers);
         BitmapContext.setHeight(bm.getHeight()/SCALE);
         BitmapContext.setWidth(bm.getWidth()/SCALE);
 
         Graph graph = new Graph();
-        Point p1 = new Point(276, 215);
-        Point p2 = new Point(383, 43);
-        bitmapHelper.getDistanceOfPoints(p1,p2);
         Contour contour = processGraph.getContourFromBitmap(bm);
         TreeSet<Point> contourPoints = contour.getPoints();
         graph.setNodes(processGraph.findGraphNodes(contourPoints));
         graph.setEdges(processGraph.findEdges(graph.getNodes(), contourPoints));
         List<Island> islands = processGraph.findIslands(contour);
-        ImageView imageView = (ImageView)findViewById(R.id.image_view);
-        //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(contour));
-        //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getNodes()));
-       // TreeSet<Point> islandPoints = islands.get(2).getPoints();
-        imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getNodes()));
+        Bitmap numberBitmap = bitmapHelper.createNumberBitmapFromIsland(islands.get(4));
+        int number = ocrHelper.numberFromBitmap(numberBitmap, this);
+        imageView.setImageBitmap(numberBitmap);
     }
 }

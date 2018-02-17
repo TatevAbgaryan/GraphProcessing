@@ -6,6 +6,7 @@ import android.graphics.Color;
 import com.example.tatevabgaryan.graphprocessing.MainActivity;
 import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
+import com.example.tatevabgaryan.graphprocessing.model.Island;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
 
 import java.util.ArrayList;
@@ -37,6 +38,27 @@ public class BitmapHelper {
         return image;
     }
 
+    public Bitmap createNumberBitmapFromIsland(Island island) {
+        int minX = Integer.MAX_VALUE, maxX = 0, minY = Integer.MAX_VALUE, maxY = 0;
+        Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
+        image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth(), BitmapContext.getHeight(), true);
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                Point p = new Point(x, y);
+                if (island.getPoints().contains(p)) {
+                    image.setPixel(x, y, Color.rgb(255, 255, 255));
+                    if (x < minX) minX = x;
+                    if(y < minY) minY = y;
+                    if(x > maxX) maxX = x;
+                    if(y > maxY) maxY = y;
+                } else {
+                    image.setPixel(x, y, Color.rgb(0, 0, 0));
+                }
+            }
+        }
+
+        return Bitmap.createBitmap(image, minX-3, minY-3, maxX-minX+10, maxY - minY+10);
+    }
     public boolean isEdge(final Point p1, final Point p2, final TreeSet<Point> contour) {
         boolean smallerX = p1.getX() < p2.getX();
         final int x1 = smallerX ? p1.getX() : p2.getX(), x2 = smallerX ? p2.getX() : p1.getX(),
