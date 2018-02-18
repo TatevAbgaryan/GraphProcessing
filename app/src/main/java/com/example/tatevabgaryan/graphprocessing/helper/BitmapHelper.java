@@ -20,7 +20,8 @@ public class BitmapHelper {
 
     public Bitmap createBitmapFromPoint(TreeSet<Point> contour) {
 //        contour = new TreeSet<>(new PointComparator());
-//        contour.add(new Point(276, 215));
+//        contour.add(new Point(436, 75));
+//        contour.add(new Point(595, 159));
 //        contour.add(new Point(383, 47));
 
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
@@ -67,13 +68,21 @@ public class BitmapHelper {
         for (int i = x1 + 1; i <= x2 - 1; i++) {
             double y = y2 - (double) ((x2 - i) * (y2 - y1)) / (x2 - x1);
             if (isInteger(y)) {
-                if (!contour.contains(new Point(i, (int) y)))
+                if (!containsApprox(contour, new Point(i, (int) y)))
                     return false;
             }
         }
         return true;
     }
 
+    private boolean containsApprox(TreeSet<Point> contour, Point linePoint){
+        for(Point p: contour){
+            if(getDistanceOfPoints(p, linePoint) < 10){
+                return true;
+            }
+        }
+        return false;
+    }
     private boolean isInteger(double y) {
         if ((y == Math.floor(y)) && !Double.isInfinite(y)) {
             return true;

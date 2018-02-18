@@ -4,7 +4,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 
 import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
-import com.example.tatevabgaryan.graphprocessing.comparator.PointComparatorApprox;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.helper.BitmapHelper;
 import com.example.tatevabgaryan.graphprocessing.helper.IslandHelper;
@@ -67,11 +66,9 @@ public class ProcessGraph implements ProcessGraphI {
     public List<Edge> findEdges(TreeSet<Point> nodes, TreeSet<Point> contour) {
         List<Edge> edges = new ArrayList<>();
         List<Point> nodesList = new ArrayList<>(nodes);
-        TreeSet<Point> contourApprox = new TreeSet<>(new PointComparatorApprox());
-        contourApprox.addAll(contour);
         for (int i = 0; i < nodesList.size(); i++) {
             for (int j = i + 1; j < nodesList.size(); j++) {
-                if (bitmapHelper.isEdge(nodesList.get(i), nodesList.get(j), contourApprox)) {
+                if (bitmapHelper.isEdge(nodesList.get(i), nodesList.get(j), contour)) {
                     edges.add(new Edge(nodesList.get(i), nodesList.get(j)));
                 }
             }
