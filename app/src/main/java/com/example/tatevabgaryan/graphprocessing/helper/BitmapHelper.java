@@ -39,6 +39,27 @@ public class BitmapHelper {
         return image;
     }
 
+    public Bitmap createBitmapFromNodes(List<TreeSet<Point>> nodes) {
+       List<Point> contour = new ArrayList<>();
+//        contour.add(new Point(436, 75));
+        for(TreeSet<Point> nodePoints : nodes){
+            contour.addAll(nodePoints);
+        }
+        Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
+        image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth(), BitmapContext.getHeight(), true);
+        for (int x = 0; x < image.getWidth(); x++) {
+            for (int y = 0; y < image.getHeight(); y++) {
+                Point p = new Point(x, y);
+                if (contour.contains(p)) {
+                    image.setPixel(x, y, Color.rgb(0, 0, 0));
+                } else {
+                    image.setPixel(x, y, Color.rgb(255, 255, 255));
+                }
+            }
+        }
+        return image;
+    }
+
     public Bitmap createNumberBitmapFromIsland(Island island) {
         int minX = Integer.MAX_VALUE, maxX = 0, minY = Integer.MAX_VALUE, maxY = 0;
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
@@ -60,19 +81,29 @@ public class BitmapHelper {
 
         return Bitmap.createBitmap(image, minX-3, minY-3, maxX-minX+10, maxY - minY+10);
     }
-    public boolean isEdge(final Point p1, final Point p2, final TreeSet<Point> contour) {
-        boolean smallerX = p1.getX() < p2.getX();
-        final int x1 = smallerX ? p1.getX() : p2.getX(), x2 = smallerX ? p2.getX() : p1.getX(),
-                y1 = smallerX ? p1.getY() : p2.getY(),
-                y2 = smallerX ? p2.getY() : p1.getY();
-        for (int i = x1 + 1; i <= x2 - 1; i++) {
-            double y = y2 - (double) ((x2 - i) * (y2 - y1)) / (x2 - x1);
-            if (isInteger(y)) {
-                if (!containsApprox(contour, new Point(i, (int) y)))
-                    return false;
+
+    public boolean isEdge(final List<Point> n1, final List<Point> n2, final TreeSet<Point> contour) {
+        for (Point p1 : n1) {
+            for (Point p2 : n2) {
+                boolean smallerX = p1.getX() < p2.getX();
+                final int x1 = smallerX ? p1.getX() : p2.getX(), x2 = smallerX ? p2.getX() : p1.getX(),
+                        y1 = smallerX ? p1.getY() : p2.getY(),
+                        y2 = smallerX ? p2.getY() : p1.getY();
+                boolean foundY = false;
+                for (int i = x1 + 1; i <= x2 - 1; i++) {
+                    double y = y2 - (double) ((x2 - i) * (y2 - y1)) / (x2 - x1);
+                    if (isInteger(y)) {
+                        foundY = true;
+                        if (!containsApprox(contour, new Point(i, (int) y)))
+                            return false;
+                    }
+                    if(foundY && i == x2-1){
+                        return true;
+                    }
+                }
             }
         }
-        return true;
+        return false;
     }
 
     private boolean containsApprox(TreeSet<Point> contour, Point linePoint){
@@ -90,18 +121,18 @@ public class BitmapHelper {
         return false;
     }
 
-    public TreeSet<Point> filterOnePixelFromEach(TreeSet<Point> nodes) {
-        TreeSet<Point> filtered = new TreeSet<>(new PointComparator());
-        List<Point> pointsOfEachNode = new ArrayList<>();
+    public List<TreeSet<Point>> groupPointsOfEachNode(TreeSet<Point> nodes) {
+        List<TreeSet<Point>> grouped = new ArrayList<>();
+        TreeSet<Point> pointsOfEachNode = new TreeSet<>(new PointComparator());
         Point previousPoint = null;
         for (Point p : nodes) {
             if (previousPoint == null) {
                 pointsOfEachNode.add(p);
             } else {
                 if (getDistanceOfPoints(previousPoint, p) > MainActivity.NODE_POINT_DISTANCE) {
-                    if (pointsOfEachNode.size() != 0) {
-                        filtered.add(pointsOfEachNode.get(pointsOfEachNode.size() / 2));
-                        pointsOfEachNode = new ArrayList<>();
+                    if (pointsOfEachNode.size() > 5) {
+                        grouped.add(pointsOfEachNode);
+                        pointsOfEachNode = new TreeSet<>(new PointComparator());
                         pointsOfEachNode.add(p);
                     }
                 } else {
@@ -110,20 +141,8 @@ public class BitmapHelper {
             }
             previousPoint = p;
         }
-        filtered.add(pointsOfEachNode.get(pointsOfEachNode.size() / 2));
-
-        // TODO There are points from different nodes that have "same" distance from origin and mix the order in  nodes treeSet
-        // as a result -> 2 points from same node.
-        TreeSet<Point> toRemove = new TreeSet<>(new PointComparator());
-        for (Point p1 : filtered) {
-            for (Point p2 : filtered) {
-                if (!toRemove.contains(p1) && !p1.equals(p2) && getDistanceOfPoints(p1, p2) < MainActivity.NODE_POINT_DISTANCE) {
-                    toRemove.add(p2);
-                }
-            }
-        }
-        filtered.removeAll(toRemove);
-        return filtered;
+        grouped.add(pointsOfEachNode);
+        return grouped;
     }
 
     public int getDistanceOfPoints(Point p1, Point p2) {

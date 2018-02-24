@@ -52,24 +52,25 @@ public class ProcessGraph implements ProcessGraphI {
     }
 
     @Override
-    public TreeSet<Point> findGraphNodes(TreeSet<Point> contour) {
+    public List<TreeSet<Point>> findGraphNodes(TreeSet<Point> contour) {
         TreeSet<Point> nodes = new TreeSet<>(new PointComparator());
         for (Point p : contour) {
             if (bitmapHelper.isNode(p, contour)) {
                 nodes.add(p);
             }
         }
-        return bitmapHelper.filterOnePixelFromEach(nodes);
+        return bitmapHelper.groupPointsOfEachNode(nodes);
     }
 
     @Override
-    public List<Edge> findEdges(TreeSet<Point> nodes, TreeSet<Point> contour) {
+    public List<Edge> findEdges(List<TreeSet<Point>> nodes, TreeSet<Point> contour) {
         List<Edge> edges = new ArrayList<>();
-        List<Point> nodesList = new ArrayList<>(nodes);
-        for (int i = 0; i < nodesList.size(); i++) {
-            for (int j = i + 1; j < nodesList.size(); j++) {
-                if (bitmapHelper.isEdge(nodesList.get(i), nodesList.get(j), contour)) {
-                    edges.add(new Edge(nodesList.get(i), nodesList.get(j)));
+       // List<Point> nodesList = new ArrayList<>(nodes);
+        for (int i = 0; i < nodes.size(); i++) {
+            for (int j = i + 1; j < nodes.size(); j++) {
+                //TODO save node points as arraylist
+                if (bitmapHelper.isEdge(new ArrayList<>(nodes.get(i)), new ArrayList<>(nodes.get(j)), contour)) {
+                    edges.add(new Edge(nodes.get(i), nodes.get(j)));
                 }
             }
         }

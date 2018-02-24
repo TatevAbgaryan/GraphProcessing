@@ -1,33 +1,36 @@
 package com.example.tatevabgaryan.graphprocessing.model;
 
+import java.util.TreeSet;
+
 /**
  * Created by Tatev.Abgaryan on 1/29/2018.
  */
 
 public class Edge {
 
-    private Point startNode;
-    private Point endNode;
+    private TreeSet<Point> startNode;
+    private TreeSet<Point> endNode;
     private int lenght;
 
-    public Edge(Point startNode, Point endNode) {
+    public Edge(TreeSet<Point> startNode, TreeSet<Point> endNode) {
         this.startNode = startNode;
         this.endNode = endNode;
+        this.lenght = lenght;
     }
 
-    public Point getStartNode() {
+    public TreeSet<Point> getStartNode() {
         return startNode;
     }
 
-    public void setStartNode(Point startNode) {
+    public void setStartNode(TreeSet<Point> startNode) {
         this.startNode = startNode;
     }
 
-    public Point getEndNode() {
+    public TreeSet<Point> getEndNode() {
         return endNode;
     }
 
-    public void setEndNode(Point endNode) {
+    public void setEndNode(TreeSet<Point> endNode) {
         this.endNode = endNode;
     }
 

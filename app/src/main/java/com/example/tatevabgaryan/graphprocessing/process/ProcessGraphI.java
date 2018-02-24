@@ -19,9 +19,9 @@ public interface ProcessGraphI {
 
     public Contour getContourFromBitmap(Bitmap bitmap);
 
-    public TreeSet<Point> findGraphNodes(TreeSet<Point> contour);
+    public List<TreeSet<Point>> findGraphNodes(TreeSet<Point> contour);
 
-    public List<Edge> findEdges(TreeSet<Point> nodes, TreeSet<Point> contour);
+    public List<Edge> findEdges(List<TreeSet<Point>> nodes, TreeSet<Point> contour);
 
     public List<Island> findIslands(Contour contour);
 
