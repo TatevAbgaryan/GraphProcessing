@@ -9,7 +9,9 @@ import java.util.TreeSet;
  */
 
 public class Island {
-    TreeSet<Point> points;
+    private TreeSet<Point> points;
+    private boolean isGraph;
+    private int value;
 
     public Island(){
         points = new TreeSet<>(new PointComparator());
@@ -25,5 +27,21 @@ public class Island {
 
     public void setPoints(TreeSet<Point> points) {
         this.points = points;
+    }
+
+    public boolean isGraph() {
+        return isGraph;
+    }
+
+    public void setGraph(boolean graph) {
+        isGraph = graph;
+    }
+
+    public int getValue() {
+        return value;
+    }
+
+    public void setValue(int value) {
+        this.value = value;
     }
 }

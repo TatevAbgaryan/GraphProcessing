@@ -2,11 +2,11 @@ package com.example.tatevabgaryan.graphprocessing;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.widget.ImageView;
 
-import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.helper.BitmapHelper;
 import com.example.tatevabgaryan.graphprocessing.helper.OCRHelper;
@@ -32,32 +32,26 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        ImageView imageView = (ImageView)findViewById(R.id.image_view);
+        ImageView imageView = (ImageView) findViewById(R.id.image_view);
 
         BitmapHelper bitmapHelper = new BitmapHelper();
         ProcessGraph processGraph = new ProcessGraph();
-        OCRHelper ocrHelper = new OCRHelper();
 
-        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.without_numbers);
-        BitmapContext.setHeight(bm.getHeight()/SCALE);
-        BitmapContext.setWidth(bm.getWidth()/SCALE);
+        Bitmap bm = BitmapFactory.decodeResource(getResources(), R.drawable.graph_numbers);
+        Matrix matrix = new Matrix();
+        matrix.postRotate(90);
+        bm = Bitmap.createScaledBitmap(bm, bm.getWidth() / SCALE, bm.getHeight() / SCALE, true);
+        bm = Bitmap.createBitmap(bm, 0, 0, bm.getWidth(), bm.getHeight(), matrix, true);
+        BitmapContext.setHeight(bm.getHeight());
+        BitmapContext.setWidth(bm.getWidth());
 
         Graph graph = new Graph();
         Contour contour = processGraph.getContourFromBitmap(bm);
         TreeSet<Point> contourPoints = contour.getPoints();
-        TreeSet<Point> nearPoints = new TreeSet<>(new PointComparator());
-//       Point myPoint = new Point(436, 75);
-//        for(Point p: contourPoints){
-//            if(bitmapHelper.getDistanceOfPoints(p, myPoint) < 10){
-//                nearPoints.add(p);
-//            }
-//        }
         graph.setNodes(processGraph.findGraphNodes(contourPoints));
         graph.setEdges(processGraph.findEdges(graph.getNodes(), contourPoints));
-//        List<Island> islands = processGraph.findIslands(contour);
-//        Bitmap numberBitmap = bitmapHelper.createNumberBitmapFromIsland(islands.get(4));
-//        int number = ocrHelper.numberFromBitmap(numberBitmap, this);
+        List<Island> islands = processGraph.findIslands(contour, this);
+        processGraph.mapEdgesAndNumberIslands(graph, islands);
         imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(contourPoints));
     }
 }
-

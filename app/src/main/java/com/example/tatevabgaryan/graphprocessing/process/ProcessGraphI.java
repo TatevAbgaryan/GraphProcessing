@@ -1,5 +1,6 @@
 package com.example.tatevabgaryan.graphprocessing.process;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.example.tatevabgaryan.graphprocessing.model.Contour;
@@ -23,7 +24,8 @@ public interface ProcessGraphI {
 
     public List<Edge> findEdges(List<TreeSet<Point>> nodes, TreeSet<Point> contour);
 
-    public List<Island> findIslands(Contour contour);
+    public List<Island> findIslands(Contour contour, Context context);
 
+    public void mapEdgesAndNumberIslands(Graph graph, List<Island> islands);
     // ...
 }

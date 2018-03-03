@@ -10,12 +10,11 @@ public class Edge {
 
     private TreeSet<Point> startNode;
     private TreeSet<Point> endNode;
-    private int lenght;
+    private Island numberIsland;
 
     public Edge(TreeSet<Point> startNode, TreeSet<Point> endNode) {
         this.startNode = startNode;
         this.endNode = endNode;
-        this.lenght = lenght;
     }
 
     public TreeSet<Point> getStartNode() {
@@ -34,11 +33,11 @@ public class Edge {
         this.endNode = endNode;
     }
 
-    public int getLenght() {
-        return lenght;
+    public Island getNumberIsland() {
+        return numberIsland;
     }
 
-    public void setLenght(int lenght) {
-        this.lenght = lenght;
+    public void setNumberIsland(Island numberIsland) {
+        this.numberIsland = numberIsland;
     }
 }

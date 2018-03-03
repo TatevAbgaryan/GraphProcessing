@@ -8,14 +8,14 @@ import java.util.TreeSet;
  */
 
 public class Graph {
-    private TreeSet<Point> nodes;
+    private List<TreeSet<Point>> nodes;
     private List<Edge> edges;
 
-    public TreeSet<Point> getNodes() {
+    public List<TreeSet<Point>> getNodes() {
         return nodes;
     }
 
-    public void setNodes(TreeSet<Point> nodes) {
+    public void setNodes(List<TreeSet<Point>> nodes) {
         this.nodes = nodes;
     }
 

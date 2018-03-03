@@ -12,11 +12,8 @@ import java.util.List;
 
 public class IslandHelper {
 
-    //No of rows and columns
     private int rowSize, columnSize;
 
-    // A function to check if a given cell (row, col) can
-    // be included in DFS
     private boolean isSafe(int M[][], int row, int col,
                            boolean visited[][]) {
         // row number is in range, column number is in range
@@ -44,9 +41,7 @@ public class IslandHelper {
                 DFS(M, row + rowNbr[k], col + colNbr[k], visited, island);
     }
 
-    // The main function that returns count of islands in a given
-    //  boolean 2D matrix
-    public List<Island> countIslands(int M[][], int rowSize, int columnSize) {
+    public List<Island> findIslands(int M[][], int rowSize, int columnSize) {
         this.rowSize = rowSize;
         this.columnSize = columnSize;
         List<Island> islands = new ArrayList<>();
@@ -57,6 +52,8 @@ public class IslandHelper {
 
         // Initialize count as 0 and travese through the all cells
         // of given matrix
+        int maxSize = 0;
+        Island graphIsland = null;
         for (int i = 0; i < rowSize; ++i)
             for (int j = 0; j < columnSize; ++j)
                 if (M[i][j] == 1 && !visited[i][j]) // If a cell with
@@ -65,10 +62,16 @@ public class IslandHelper {
                     // cells in this island and increment island count
                     Island island = new Island();
                     DFS(M, i, j, visited, island);
-                    if (island.getPoints().size() > 20)
+                    if (island.getPoints().size() > 20) {
                         islands.add(island);
+                        if(island.getPoints().size() > maxSize){
+                            maxSize = island.getPoints().size();
+                            graphIsland = island;
+                        }
+                    }
                 }
 
+        graphIsland.setGraph(true);
         return islands;
     }
 
