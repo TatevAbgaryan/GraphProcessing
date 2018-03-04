@@ -134,7 +134,6 @@ public class GraphHelper {
                 minDistance = currentDistance;
             }
         }
-
         return minDistance;
     }
 
