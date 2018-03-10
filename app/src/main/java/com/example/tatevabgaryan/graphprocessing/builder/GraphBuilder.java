@@ -37,7 +37,7 @@ public class GraphBuilder implements IGraphBuilder {
                 int g = Color.green(grayScaled.getPixel(x, y));
                 int b = Color.blue(grayScaled.getPixel(x, y));
                 int mid = (r + g + b) / 3;
-                if (mid < 120) {
+                if (mid < 125) {
                     points.add(new Point(x, y));
                     matrix[x][y] = 1;
                 } else {
@@ -99,8 +99,7 @@ public class GraphBuilder implements IGraphBuilder {
     @Override
     public void mapEdgesAndNumberIslands() {
         List<Edge> edges = graph.getEdges();
-        //TODO change this, graph island is already known
-        List<Island> islands = graphHelper.getNumberIslands(graph.getIslands());
+        List<Island> islands = graph.getIslands();
 
         for (Edge edge : edges) {
             double minDistance = Double.MAX_VALUE;

@@ -1,5 +1,6 @@
 package com.example.tatevabgaryan.graphprocessing.helper;
 
+import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.model.Contour;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
@@ -68,7 +69,7 @@ public class IslandHelper {
                     // cells in this island and increment island count
                     Island island = new Island();
                     DFS(M, i, j, visited, island);
-                    if (island.getPoints().size() > 20) {
+                    if (island.getPoints().size() > 20 && !isCornerIsland(island)) {
                         islands.add(island);
                         if(island.getPoints().size() > maxSize){
                             maxSize = island.getPoints().size();
@@ -79,7 +80,15 @@ public class IslandHelper {
 
         graphIsland.setGraph(true);
         graph.setGraphIsland(graphIsland);
+        islands.remove(graphIsland);
         return islands;
     }
 
+    private boolean isCornerIsland(Island island){
+        if (island.getPoints().contains(new Point(0, BitmapContext.getHeight())))
+            return true;
+        else if (island.getPoints().contains(new Point(BitmapContext.getWidth(), BitmapContext.getHeight())))
+            return true;
+        return false;
+    }
 }
