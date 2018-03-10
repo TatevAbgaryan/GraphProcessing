@@ -22,9 +22,10 @@ public class GraphDirector {
 
     public Graph buildGraph(){
         builder.getContourFromBitmap(bitmap);
+        builder.findIslands();
         Thread thread = new Thread(){
             public void run() {
-                builder.findIslands(context);
+                builder.numerateIslands(context);
             }
         };
         thread.start();

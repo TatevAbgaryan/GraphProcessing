@@ -58,7 +58,7 @@ public class GraphHelper {
         return false;
     }
 
-    public List<TreeSet<Point>> groupPointsOfEachNode(TreeSet<Point> nodes) {
+    public List<TreeSet<Point>> groupPointsOfEachNode(TreeSet<Point> nodes, List<Island> islands) {
         List<TreeSet<Point>> grouped = new ArrayList<>();
         TreeSet<Point> pointsOfEachNode = new TreeSet<>(new PointComparator());
         Point previousPoint = null;
@@ -142,7 +142,11 @@ public class GraphHelper {
         BitmapHelper bitmapHelper = new BitmapHelper();
         for (Island island : islands) {
             if (!island.isGraph())
-                island.setValue(ocrHelper.numberFromBitmap(bitmapHelper.createNumberBitmapFromIsland(island), context));
+                try {
+                    island.setValue(ocrHelper.numberFromBitmap(bitmapHelper.createNumberBitmapFromIsland(island), context));
+                }catch (IllegalArgumentException ex){
+                    // ignore
+                }
         }
     }
 }
