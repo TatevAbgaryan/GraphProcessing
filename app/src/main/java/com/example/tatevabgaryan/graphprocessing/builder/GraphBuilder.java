@@ -24,7 +24,6 @@ import java.util.TreeSet;
 
 public class GraphBuilder implements IGraphBuilder {
     GraphHelper graphHelper = new GraphHelper();
-
     Graph graph = new Graph();
 
     @Override
@@ -38,7 +37,7 @@ public class GraphBuilder implements IGraphBuilder {
                 int g = Color.green(grayScaled.getPixel(x, y));
                 int b = Color.blue(grayScaled.getPixel(x, y));
                 int mid = (r + g + b) / 3;
-                if (mid < 105) {
+                if (mid < 120) {
                     points.add(new Point(x, y));
                     matrix[x][y] = 1;
                 } else {
@@ -55,12 +54,20 @@ public class GraphBuilder implements IGraphBuilder {
         graph.setContour(contour);
     }
 
+
+    @Override
+    public void findIslands() {
+        IslandHelper islandHelper = new IslandHelper();
+        List<Island> islands = islandHelper.findIslands(graph);
+        graph.setIslands(islands);
+    }
+
     @Override
     public void findGraphNodes() {
-        TreeSet<Point> contour = graph.getContour().getPoints();
+        TreeSet<Point> graphContour = graph.getGraphIsland().getPoints();
         TreeSet<Point> nodes = new TreeSet<>(new PointComparator());
-        for (Point p : contour) {
-            if (graphHelper.isNode(p, contour)) {
+        for (Point p : graphContour) {
+            if (graphHelper.isNode(p, graphContour)) {
                 nodes.add(p);
             }
         }
@@ -70,26 +77,18 @@ public class GraphBuilder implements IGraphBuilder {
 
     @Override
     public void findEdges() {
-        TreeSet<Point> contour = graph.getContour().getPoints();
+        TreeSet<Point> graphContour = graph.getGraphIsland().getPoints();
         List<TreeSet<Point>> nodes = graph.getNodes();
         List<Edge> edges = new ArrayList<>();
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = i + 1; j < nodes.size(); j++) {
                 //TODO save node points as arraylist
-                if (graphHelper.isEdge(new ArrayList<>(nodes.get(i)), new ArrayList<>(nodes.get(j)), contour)) {
+                if (graphHelper.isEdge(new ArrayList<>(nodes.get(i)), new ArrayList<>(nodes.get(j)), graphContour)) {
                     edges.add(new Edge(nodes.get(i), nodes.get(j)));
                 }
             }
         }
         graph.setEdges(edges);
-    }
-
-    @Override
-    public void findIslands() {
-        Contour contour = graph.getContour();
-        IslandHelper islandHelper = new IslandHelper();
-        List<Island> islands = islandHelper.findIslands(contour.getMatrix(), contour.getRowSize(), contour.getColumnSize());
-        graph.setIslands(islands);
     }
 
     @Override

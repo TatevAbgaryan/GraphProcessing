@@ -12,6 +12,7 @@ public class Graph {
     private List<Edge> edges;
     private Contour contour;
     private List<Island> islands;
+    private Island graphIsland;
 
     public List<TreeSet<Point>> getNodes() {
         return nodes;
@@ -43,5 +44,13 @@ public class Graph {
 
     public void setIslands(List<Island> islands) {
         this.islands = islands;
+    }
+
+    public Island getGraphIsland() {
+        return graphIsland;
+    }
+
+    public void setGraphIsland(Island graphIsland) {
+        this.graphIsland = graphIsland;
     }
 }

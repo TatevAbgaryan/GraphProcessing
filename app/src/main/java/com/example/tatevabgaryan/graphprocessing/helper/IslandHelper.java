@@ -1,5 +1,7 @@
 package com.example.tatevabgaryan.graphprocessing.helper;
 
+import com.example.tatevabgaryan.graphprocessing.model.Contour;
+import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
 
@@ -41,7 +43,11 @@ public class IslandHelper {
                 DFS(M, row + rowNbr[k], col + colNbr[k], visited, island);
     }
 
-    public List<Island> findIslands(int M[][], int rowSize, int columnSize) {
+    public List<Island> findIslands(Graph graph) {
+        Contour contour = graph.getContour();
+        int M[][] = contour.getMatrix();
+        int rowSize = contour.getRowSize();
+        int columnSize = contour.getColumnSize();
         this.rowSize = rowSize;
         this.columnSize = columnSize;
         List<Island> islands = new ArrayList<>();
@@ -72,6 +78,7 @@ public class IslandHelper {
                 }
 
         graphIsland.setGraph(true);
+        graph.setGraphIsland(graphIsland);
         return islands;
     }
 

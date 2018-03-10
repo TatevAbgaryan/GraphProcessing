@@ -13,11 +13,11 @@ public interface IGraphBuilder {
 
     public void getContourFromBitmap(Bitmap bitmap);
 
+    public void findIslands();
+
     public void findGraphNodes();
 
     public void findEdges();
-
-    public void findIslands();
 
     public void numerateIslands(Context context);
 

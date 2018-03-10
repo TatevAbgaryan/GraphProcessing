@@ -106,7 +106,7 @@ public class MainActivity extends Activity {
                         GraphDirector graphDirector = new GraphDirector(source, MainActivity.this);
                         Graph graph = graphDirector.buildGraph();
                         BitmapHelper bitmapHelper = new BitmapHelper();
-                        imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
+                        imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getGraphIsland().getPoints()));
                     }
                 });
                 return false;
