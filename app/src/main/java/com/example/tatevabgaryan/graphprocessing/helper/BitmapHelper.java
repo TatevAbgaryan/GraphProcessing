@@ -1,8 +1,12 @@
 package com.example.tatevabgaryan.graphprocessing.helper;
 
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.Matrix;
+import android.view.ViewGroup;
 
+import com.example.tatevabgaryan.graphprocessing.MainActivity;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
@@ -17,11 +21,6 @@ import java.util.TreeSet;
 public class BitmapHelper {
 
     public Bitmap createBitmapFromPoint(TreeSet<Point> contour) {
-//        contour = new TreeSet<>(new PointComparator());
-//        contour.add(new Point(436, 75));
-//        contour.add(new Point(595, 159));
-//        contour.add(new Point(383, 47));
-
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
         image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth(), BitmapContext.getHeight(), true);
         for (int x = 0; x < image.getWidth(); x++) {
@@ -39,19 +38,18 @@ public class BitmapHelper {
 
     public Bitmap createBitmapFromNodes(List<TreeSet<Point>> nodes) {
         List<Point> contour = new ArrayList<>();
-//        contour.add(new Point(436, 75));
         for (TreeSet<Point> nodePoints : nodes) {
             contour.addAll(nodePoints);
         }
-        Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
-        image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth(), BitmapContext.getHeight(), true);
+        Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth() * MainActivity.SCALE, BitmapContext.getHeight()* MainActivity.SCALE, Bitmap.Config.ARGB_8888);
+        image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth()* MainActivity.SCALE, BitmapContext.getHeight()* MainActivity.SCALE, true);
         for (int x = 0; x < image.getWidth(); x++) {
             for (int y = 0; y < image.getHeight(); y++) {
-                Point p = new Point(x, y);
+                Point p = new Point(x/MainActivity.SCALE, y/MainActivity.SCALE);
                 if (contour.contains(p)) {
                     image.setPixel(x, y, Color.rgb(0, 0, 0));
                 } else {
-                    image.setPixel(x, y, Color.rgb(255, 255, 255));
+                    image.setPixel(x, y, Color.TRANSPARENT);
                 }
             }
         }
@@ -76,10 +74,37 @@ public class BitmapHelper {
                 }
             }
         }
-
-//        return Bitmap.createBitmap(image, minX-3 >= 0 ? minX-3 : minX, minY-3 >= 0 ? minY-3 : minY,
-//                maxX-minX+10 < BitmapContext.getWidth() ?  maxX-minX+10 : BitmapContext.getWidth(),
-//                maxY - minY+10  < BitmapContext.getHeight() - minY -3 ? maxY - minY+10 : maxY - minY -1);
         return Bitmap.createBitmap(image, minX, minY,maxX - minX,maxY - minY);
+    }
+
+    public Bitmap createBitmapFormCameraStream(byte[] bytes, ViewGroup.LayoutParams params){
+
+        int maxSize = 816;
+        BitmapFactory.Options opt = new BitmapFactory.Options();
+        opt.inJustDecodeBounds = true;
+        BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opt);
+        int srcSize = Math.max(opt.outWidth, opt.outHeight);
+        opt.inSampleSize = maxSize < srcSize ? (srcSize / maxSize) : 1;
+        opt.inJustDecodeBounds = false;
+        Bitmap tmp = BitmapFactory.decodeByteArray(bytes, 0, bytes.length, opt);
+
+        //Scaling and rotation
+        float scale = Math.max((float) maxSize / opt.outWidth, (float) maxSize / opt.outHeight);
+        Matrix matrix = new Matrix();
+        int size = Math.min(opt.outWidth, opt.outHeight);
+        //TODO always 90?
+        matrix.setRotate(90);
+        matrix.postScale(scale, scale);
+
+        int adj;
+        float previewRate = (float) params.width / (float) params.height;
+        float cameraRate = (float) opt.outHeight / (float) opt.outWidth;
+        if (cameraRate > previewRate) {
+            adj = (int) (size * (cameraRate - previewRate) * 0.5);
+        } else{
+            adj = (int) (size * (previewRate - cameraRate) * 0.5);
+        }
+        Bitmap source = Bitmap.createBitmap(tmp, adj + (opt.outWidth - size) / 2, adj + (opt.outHeight - size) / 2, size - adj * 2, size - adj * 2, matrix, true);
+        return source;
     }
 }

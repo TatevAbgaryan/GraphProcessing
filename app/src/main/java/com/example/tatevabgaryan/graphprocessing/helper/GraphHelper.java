@@ -1,10 +1,12 @@
 package com.example.tatevabgaryan.graphprocessing.helper;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.example.tatevabgaryan.graphprocessing.MainActivity;
 import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
 import com.example.tatevabgaryan.graphprocessing.model.Edge;
+import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
 
@@ -110,19 +112,6 @@ public class GraphHelper {
         return true;
     }
 
-    public List<Island> getNumberIslands(List<Island> islands) {
-        int graphIslandIndex = 0;
-        int maxCountOFPoints = 0;
-        for (int i = 0; i < islands.size(); i++) {
-            if (islands.get(i).getPoints().size() > maxCountOFPoints) {
-                maxCountOFPoints = islands.get(i).getPoints().size();
-                graphIslandIndex = i;
-            }
-        }
-        islands.remove(graphIslandIndex);
-        return islands;
-    }
-
     public double getDistanceOfNumberFromEdge(Island island, Edge edge) {
         int midPX = (edge.getStartNode().first().getX() + edge.getEndNode().first().getX()) / 2;
         int midPY = (edge.getStartNode().first().getY() + edge.getEndNode().first().getY()) / 2;
@@ -137,16 +126,43 @@ public class GraphHelper {
         return minDistance;
     }
 
-    public void numerateIslands(List<Island> islands, Context context) {
-        OCRHelper ocrHelper = new OCRHelper();
-        BitmapHelper bitmapHelper = new BitmapHelper();
-        for (Island island : islands) {
-            if (!island.isGraph())
+    public void numerateIslands(List<Island> islands, final Context context) {
+        final OCRHelper ocrHelper = new OCRHelper();
+        final BitmapHelper bitmapHelper = new BitmapHelper();
+        for (final Island island : islands) {
+            if (!island.isGraph()) {
+                Thread t = new Thread(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            int number = ocrHelper.numberFromBitmap(bitmapHelper.createNumberBitmapFromIsland(island), context);
+                            island.setValue(number != 0 ? number : 2);
+                            Log.d("islandValue", island.getValue() + "");
+                        } catch (IllegalArgumentException ex) {
+                            ex.printStackTrace();
+                        }
+                    }
+                });
+                t.start();
                 try {
-                    island.setValue(ocrHelper.numberFromBitmap(bitmapHelper.createNumberBitmapFromIsland(island), context));
-                }catch (IllegalArgumentException ex){
-                    // ignore
+                    t.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
+            }
         }
+    }
+
+    public int findNearestNode(Graph graph, Point touchPoint) {
+        double minDistance = Double.MAX_VALUE;
+        double current;
+        int nearestNodeIndex = -1;
+        for (int i = 0; i < graph.getNodes().size(); i++) {
+            if ((current = getDistanceOfPoints(graph.getNodes().get(i).first(), touchPoint)) < minDistance) {
+                minDistance = current;
+                nearestNodeIndex = i;
+            }
+        }
+        return nearestNodeIndex;
     }
 }

@@ -37,7 +37,7 @@ public class GraphBuilder implements IGraphBuilder {
                 int g = Color.green(grayScaled.getPixel(x, y));
                 int b = Color.blue(grayScaled.getPixel(x, y));
                 int mid = (r + g + b) / 3;
-                if (mid < 125) {
+                if (mid < 118) {
                     points.add(new Point(x, y));
                     matrix[x][y] = 1;
                 } else {

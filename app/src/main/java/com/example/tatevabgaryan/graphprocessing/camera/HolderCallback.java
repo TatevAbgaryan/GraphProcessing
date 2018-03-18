@@ -1,21 +1,9 @@
 package com.example.tatevabgaryan.graphprocessing.camera;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.graphics.PixelFormat;
 import android.hardware.Camera;
-import android.util.Log;
-import android.view.MotionEvent;
 import android.view.SurfaceHolder;
-import android.view.View;
-
-import com.example.tatevabgaryan.graphprocessing.MainActivity;
-import com.example.tatevabgaryan.graphprocessing.builder.GraphDirector;
-import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
-import com.example.tatevabgaryan.graphprocessing.helper.BitmapHelper;
-import com.example.tatevabgaryan.graphprocessing.model.Graph;
 
 import java.io.IOException;
 import java.util.List;

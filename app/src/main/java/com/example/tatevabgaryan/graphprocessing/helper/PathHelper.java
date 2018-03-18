@@ -41,7 +41,7 @@ public class PathHelper {
                 for (int w = 0; w < shortestLengths.length; w++) {
                     if (shortestLengths[v][w] > shortestLengths[v][i] + shortestLengths[i][w]) {
                         shortestLengths[v][w] = shortestLengths[v][i] + shortestLengths[i][w];
-                        shortestRoutes[v][w] = shortestLengths[v][i];
+                        shortestRoutes[v][w] = shortestRoutes[v][i];
                     }
                 }
             }

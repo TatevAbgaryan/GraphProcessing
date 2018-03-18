@@ -85,9 +85,13 @@ public class IslandHelper {
     }
 
     private boolean isCornerIsland(Island island){
-        if (island.getPoints().contains(new Point(0, BitmapContext.getHeight())))
+        if (island.getPoints().contains(new Point(0, BitmapContext.getHeight() - 1)))
             return true;
-        else if (island.getPoints().contains(new Point(BitmapContext.getWidth(), BitmapContext.getHeight())))
+        else if (island.getPoints().contains(new Point(BitmapContext.getWidth() - 1, BitmapContext.getHeight() - 1)))
+            return true;
+        else if (island.getPoints().contains(new Point(1, 1)))
+            return true;
+        else if (island.getPoints().contains(new Point(BitmapContext.getWidth() - 1, 0)))
             return true;
         return false;
     }
