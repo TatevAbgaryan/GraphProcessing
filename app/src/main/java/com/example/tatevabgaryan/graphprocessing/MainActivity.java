@@ -29,7 +29,7 @@ import java.util.TreeSet;
 
 
 public class MainActivity extends Activity {
-    public static final int SCALE = 2;
+    public static final int SCALE = 5;
     public static final int NODE_RADIUS = 4;
     public static final int NODE_POINT_DISTANCE = 20;
 
@@ -64,6 +64,7 @@ public class MainActivity extends Activity {
         final RectF prevRectF = CameraUtils.getPreviewSize(true, camera, this);
         sv.getLayoutParams().height = (int) (prevRectF.bottom);
         sv.getLayoutParams().width = (int) (prevRectF.right);
+
         sv.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {
                 countClick++;
@@ -75,12 +76,12 @@ public class MainActivity extends Activity {
                         @Override
                         public void onPictureTaken(byte[] bytes, Camera camera) {
                             //camera.stopPreview();
-                            Bitmap source = bitmapHelper.createBitmapFormCameraStream(bytes, sv.getLayoutParams());
+                            Bitmap source = bitmapHelper.createBitmapFormCameraStream(bytes);
                             graph = processGraph(source);
                             PathHelper pathHelper = new PathHelper();
                             shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
                             pathHelper.fillAllPairShortestPaths(shortestPaths, graph);
-                            imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(graph.getNodes()));
+                           imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(graph.getNodes()));
                         }
                     });
                 } else {
@@ -116,7 +117,7 @@ public class MainActivity extends Activity {
     private Graph processGraph(Bitmap source) {
         source = Bitmap.createScaledBitmap(source, source.getWidth() / SCALE, source.getHeight() / SCALE, false);
         imageView.setImageBitmap(source);
-        BitmapContext.setHeight(source.getWidth());
+        BitmapContext.setHeight(source.getHeight());
         BitmapContext.setWidth(source.getWidth());
         GraphDirector graphDirector = new GraphDirector(source, MainActivity.this);
         return graphDirector.buildGraph();
