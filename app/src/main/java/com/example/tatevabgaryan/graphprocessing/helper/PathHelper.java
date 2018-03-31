@@ -4,6 +4,7 @@ import com.example.tatevabgaryan.graphprocessing.model.Edge;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -26,10 +27,12 @@ public class PathHelper {
                 if (i == j) {
                     shortestLengths[i][j] = 0;
                 } else if ((index = edges.indexOf(graphEdge)) != -1) {
-                    shortestLengths[i][j] = edges.get(index
-                    ).getNumberIsland().getValue();
+                    int value = edges.get(index).getNumberIsland().getValue();
+                    shortestLengths[i][j] = value;
+                    shortestLengths[j][i] = value;
                 } else {
-                    shortestLengths[i][j] = Double.POSITIVE_INFINITY;
+                    if (shortestLengths[i][j] == 0)
+                        shortestLengths[i][j] = Double.POSITIVE_INFINITY;
                 }
 
             }
