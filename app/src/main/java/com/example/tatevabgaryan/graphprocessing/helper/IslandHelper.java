@@ -69,7 +69,7 @@ public class IslandHelper {
                     // cells in this island and increment island count
                     Island island = new Island();
                     DFS(M, i, j, visited, island);
-                    if (island.getPoints().size() > 20 && !isCornerIsland(island)) {
+                    if (island.getPoints().size() > 30 && !isCornerIsland(island)) {
                         islands.add(island);
                         if(island.getPoints().size() > maxSize){
                             maxSize = island.getPoints().size();

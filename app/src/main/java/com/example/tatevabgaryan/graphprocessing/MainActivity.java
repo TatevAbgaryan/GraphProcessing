@@ -2,9 +2,11 @@ package com.example.tatevabgaryan.graphprocessing;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.RectF;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -19,18 +21,23 @@ import com.example.tatevabgaryan.graphprocessing.camera.HolderCallback;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.helper.BitmapHelper;
 import com.example.tatevabgaryan.graphprocessing.helper.GraphHelper;
+import com.example.tatevabgaryan.graphprocessing.helper.OCRHelper;
 import com.example.tatevabgaryan.graphprocessing.helper.PathHelper;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
+import com.example.tatevabgaryan.graphprocessing.ocr.Classification;
+import com.example.tatevabgaryan.graphprocessing.ocr.Classifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 
 public class MainActivity extends Activity {
     public static final int SCALE = 5;
-    public static final int NODE_RADIUS = 4;
+    public static final int NODE_RADIUS = 5;
     public static final int NODE_POINT_DISTANCE = 20;
 
     private SurfaceView sv;
@@ -64,6 +71,7 @@ public class MainActivity extends Activity {
         final RectF prevRectF = CameraUtils.getPreviewSize(true, camera, this);
         sv.getLayoutParams().height = (int) (prevRectF.bottom);
         sv.getLayoutParams().width = (int) (prevRectF.right);
+        OCRHelper.initialize(this);
 
         sv.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {
@@ -78,10 +86,10 @@ public class MainActivity extends Activity {
                             //camera.stopPreview();
                             Bitmap source = bitmapHelper.createBitmapFormCameraStream(bytes);
                             graph = processGraph(source);
-                            PathHelper pathHelper = new PathHelper();
-                            shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
-                            pathHelper.fillAllPairShortestPaths(shortestPaths, graph);
-                           imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(graph.getNodes()));
+//                            PathHelper pathHelper = new PathHelper();
+//                            shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
+//                            pathHelper.fillAllPairShortestPaths(shortestPaths, graph);
+                           imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
                         }
                     });
                 } else {

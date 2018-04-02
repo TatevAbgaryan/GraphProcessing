@@ -135,7 +135,7 @@ public class GraphHelper {
                     @Override
                     public void run() {
                         try {
-                            int number = ocrHelper.numberFromBitmap(bitmapHelper.createNumberBitmapFromIsland(island), context);
+                            int number = ocrHelper.numberFromBitmap(bitmapHelper.createNumberBitmapFromIsland(island));
                             island.setValue(number != 0 ? number : 2);
                             Log.d("islandValue", island.getValue() + "");
                         } catch (IllegalArgumentException ex) {

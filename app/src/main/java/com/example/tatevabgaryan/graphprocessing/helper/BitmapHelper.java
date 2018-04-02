@@ -57,7 +57,7 @@ public class BitmapHelper {
                 }
             }
         }
-        image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth()* MainActivity.SCALE, BitmapContext.getHeight()* MainActivity.SCALE, true);
+        image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth() * MainActivity.SCALE, BitmapContext.getHeight() * MainActivity.SCALE, true);
         return image;
     }
 
@@ -65,24 +65,24 @@ public class BitmapHelper {
         int minX = Integer.MAX_VALUE, maxX = 0, minY = Integer.MAX_VALUE, maxY = 0;
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
         image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth(), BitmapContext.getHeight(), true);
-        for (int x = 1; x < image.getWidth()-1; x++) {
-            for (int y = 1; y < image.getHeight()-1; y++) {
+        for (int x = 1; x < image.getWidth() - 1; x++) {
+            for (int y = 1; y < image.getHeight() - 1; y++) {
                 Point p = new Point(x, y);
                 if (island.getPoints().contains(p)) {
-                    image.setPixel(x, y, Color.rgb(255, 255, 255));
+                    image.setPixel(x, y, Color.rgb(0, 0, 0));
                     if (x < minX) minX = x;
                     if (y < minY) minY = y;
                     if (x > maxX) maxX = x;
                     if (y > maxY) maxY = y;
                 } else {
-                    image.setPixel(x, y, Color.rgb(0, 0, 0));
+                    image.setPixel(x, y, Color.rgb(255, 255, 255));
                 }
             }
         }
-        return Bitmap.createBitmap(image, minX, minY,maxX - minX,maxY - minY);
+        return Bitmap.createBitmap(image, minX - 10, minY - 10, maxX - minX + 20, maxY - minY + 20);
     }
 
-    public Bitmap createBitmapFormCameraStream(byte[] bytes){
+    public Bitmap createBitmapFormCameraStream(byte[] bytes) {
         Matrix matrix = new Matrix();
         matrix.setRotate(90);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);

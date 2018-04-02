@@ -23,20 +23,20 @@ public class GraphDirector {
     public Graph buildGraph(){
         builder.getContourFromBitmap(bitmap);
         builder.findIslands();
-        Thread thread = new Thread(){
-            public void run() {
-                builder.numerateIslands(context);
-            }
-        };
-        thread.start();
-        builder.findGraphNodes();
-        builder.findEdges();
-        try {
-            thread.join();
-        } catch (InterruptedException e) {
-            throw new IllegalStateException();
-        }
-        builder.mapEdgesAndNumberIslands();
+//        Thread thread = new Thread(){
+//            public void run() {
+//                builder.numerateIslands(context);
+//            }
+//        };
+//        thread.start();
+//        builder.findGraphNodes();
+//        builder.findEdges();
+//        try {
+//            thread.join();
+//        } catch (InterruptedException e) {
+//            throw new IllegalStateException();
+//        }
+//        builder.mapEdgesAndNumberIslands();
         return builder.getGraph();
     }
 
