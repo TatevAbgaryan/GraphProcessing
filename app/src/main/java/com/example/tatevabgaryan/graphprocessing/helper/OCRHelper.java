@@ -6,25 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.util.Log;
 
-import com.example.tatevabgaryan.graphprocessing.R;
 import com.example.tatevabgaryan.graphprocessing.ocr.Classification;
 import com.example.tatevabgaryan.graphprocessing.ocr.Classifier;
-
-import org.opencv.android.OpenCVLoader;
-import org.opencv.android.Utils;
-import org.opencv.core.Core;
-import org.opencv.core.CvType;
-import org.opencv.core.Mat;
-import org.opencv.core.Rect;
-import org.opencv.core.Size;
-import org.opencv.imgcodecs.Imgcodecs;
-import org.opencv.imgproc.Imgproc;
-import org.opencv.ml.KNearest;
-import org.opencv.ml.Ml;
-import org.opencv.utils.Converters;
-
-import java.util.ArrayList;
-import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
 

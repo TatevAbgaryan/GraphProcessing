@@ -34,27 +34,11 @@ public class GraphBuilder implements IGraphBuilder {
         final TreeSet<Point> points = new TreeSet<>(new PointComparator());
         final int[][] matrix = new int[bitmap.getWidth()][bitmap.getHeight()];
         final Bitmap grayScaled = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-//        for (int x = 0; x < grayScaled.getWidth(); x++) {
-//            for (int y = 0; y < grayScaled.getHeight(); y++) {
-//                int r = Color.red(grayScaled.getPixel(x, y));
-//                int g = Color.green(grayScaled.getPixel(x, y));
-//                int b = Color.blue(grayScaled.getPixel(x, y));
-//                int mid = (r + g + b) / 3;
-//                if (mid < 118) {
-//                    points.add(new Point(x, y));
-//                    matrix[x][y] = 1;
-//                } else {
-//                    Log.d("midColor", mid+"");
-//                    matrix[x][y] = 0;
-//                }
-//            }
-//        }
-
         int threadCount = 20;
         Thread[] threads = new Thread[threadCount];
-        for(int i = 0; i<threadCount; i++){
-            final int startH = i*bitmap.getHeight()/threadCount;
-            final int endH = i == threadCount -1 ? bitmap.getHeight() : (i+1)*bitmap.getHeight()/threadCount;
+        for (int i = 0; i < threadCount; i++) {
+            final int startH = i * bitmap.getHeight() / threadCount;
+            final int endH = i == threadCount - 1 ? bitmap.getHeight() : (i + 1) * bitmap.getHeight() / threadCount;
             Thread ti = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -64,35 +48,13 @@ public class GraphBuilder implements IGraphBuilder {
             ti.start();
             threads[i] = ti;
         }
-       for(int i=0; i<threadCount; i++){
-           try {
-               threads[i].join();
-           } catch (InterruptedException e) {
-               e.printStackTrace();
-           }
-       }
-//        Thread t2 = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                findPoints(grayScaled, points, matrix, bitmap.getHeight()/3, 2*bitmap.getHeight()/3);
-//            }
-//        });
-//        Thread t3 = new Thread(new Runnable() {
-//            @Override
-//            public void run() {
-//                findPoints(grayScaled, points, matrix, 2*bitmap.getHeight()/3, bitmap.getHeight());
-//            }
-//        });
-//        t1.start();
-//        t2.start();
-//        t3.start();
-//        try {
-//            t1.join();
-//            t2.join();
-//            t3.join();
-//        } catch (InterruptedException e) {
-//            e.printStackTrace();
-//        }
+        for (int i = 0; i < threadCount; i++) {
+            try {
+                threads[i].join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         Contour contour = new Contour();
         contour.setMatrix(matrix);
         contour.setPoints(points);
@@ -129,7 +91,6 @@ public class GraphBuilder implements IGraphBuilder {
         List<Edge> edges = new ArrayList<>();
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = i + 1; j < nodes.size(); j++) {
-                //TODO save node points as arraylist
                 if (graphHelper.isEdge(new ArrayList<>(nodes.get(i)), new ArrayList<>(nodes.get(j)), graphContour)) {
                     edges.add(new Edge(nodes.get(i), nodes.get(j)));
                 }
@@ -167,18 +128,19 @@ public class GraphBuilder implements IGraphBuilder {
         return graph;
     }
 
-    private void findPoints(Bitmap grayScaled, TreeSet<Point> points, int[][] matrix, int statH, int endH){
+    private void findPoints(Bitmap grayScaled, TreeSet<Point> points, int[][] matrix, int statH, int endH) {
+        Log.d("distributed", "stath = " + statH + " endH = " + endH);
         for (int x = 0; x < grayScaled.getWidth(); x++) {
             for (int y = statH; y < endH; y++) {
                 int r = Color.red(grayScaled.getPixel(x, y));
                 int g = Color.green(grayScaled.getPixel(x, y));
                 int b = Color.blue(grayScaled.getPixel(x, y));
                 int mid = (r + g + b) / 3;
-                if (mid < 118) {
+                if (mid < 120) {
                     points.add(new Point(x, y));
                     matrix[x][y] = 1;
                 } else {
-                    Log.d("midColor " + statH, mid+"");
+                    Log.d("midColor " + statH, mid + "");
                     matrix[x][y] = 0;
                 }
             }

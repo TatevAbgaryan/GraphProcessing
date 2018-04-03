@@ -86,10 +86,10 @@ public class MainActivity extends Activity {
                             //camera.stopPreview();
                             Bitmap source = bitmapHelper.createBitmapFormCameraStream(bytes);
                             graph = processGraph(source);
-//                            PathHelper pathHelper = new PathHelper();
-//                            shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
-//                            pathHelper.fillAllPairShortestPaths(shortestPaths, graph);
-                           imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
+                            PathHelper pathHelper = new PathHelper();
+                            shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
+                            pathHelper.fillAllPairShortestPaths(shortestPaths, graph);
+                           imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(getShortestPath()));
                         }
                     });
                 } else {
