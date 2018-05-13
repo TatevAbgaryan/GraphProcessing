@@ -19,7 +19,7 @@ public interface IGraphBuilder {
 
     public void findEdges();
 
-    public void numerateIslands(Context context);
+    public void numerateIslands();
 
     public void mapEdgesAndNumberIslands();
 

@@ -11,12 +11,14 @@ import android.hardware.Camera;
 import android.view.ViewGroup;
 
 import com.example.tatevabgaryan.graphprocessing.MainActivity;
+import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
 
 import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -28,58 +30,37 @@ public class BitmapHelper {
     public Bitmap createBitmapFromPoint(TreeSet<Point> contour) {
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
         image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth(), BitmapContext.getHeight(), true);
-        for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getHeight(); y++) {
-                Point p = new Point(x, y);
-                if (contour.contains(p)) {
-                    image.setPixel(x, y, Color.rgb(0, 0, 0));
-                } else {
-                    image.setPixel(x, y, Color.rgb(255, 255, 255));
-                }
-            }
-        }
+        image = fillBitmapPixels(image, Color.WHITE, Color.BLACK, contour);
         return image;
     }
 
-    public Bitmap createBitmapFromNodes(List<TreeSet<Point>> nodes) {
-        List<Point> contour = new ArrayList<>();
+    public Bitmap createBitmapFromNodes(List<TreeSet<Point>> nodes, int w, int h) {
+        List<Point> nodeCenters = new ArrayList<>();
         for (TreeSet<Point> nodePoints : nodes) {
-            contour.addAll(nodePoints);
+            ArrayList<Point> points = new ArrayList<>();
+            points.addAll(nodePoints);
+            nodeCenters.add(points.get(points.size()/2));
         }
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
-        for (int x = 0; x < image.getWidth(); x++) {
-            for (int y = 0; y < image.getHeight(); y++) {
-                Point p = new Point(x, y);
-                if (contour.contains(p)) {
-                    image.setPixel(x, y, Color.RED);
-                } else {
-                    image.setPixel(x, y, Color.TRANSPARENT);
+        GraphHelper graphHelper = new GraphHelper();
+        for(int i = 0; i<image.getWidth(); i++){
+            for (int j = 0; j<image.getHeight(); j++){
+                for(Point p : nodeCenters) {
+                    if (graphHelper.getDistanceOfPoints(p, new Point(i,j)) < MainActivity.NODE_POINT_DISTANCE){
+                        image.setPixel(i, j, Color.GREEN);
+                    }
                 }
             }
         }
-        image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth() * MainActivity.SCALE, BitmapContext.getHeight() * MainActivity.SCALE, true);
+        image = Bitmap.createScaledBitmap(image, w, h, true);
         return image;
     }
 
     public Bitmap createNumberBitmapFromIsland(Island island) {
-        int minX = Integer.MAX_VALUE, maxX = 0, minY = Integer.MAX_VALUE, maxY = 0;
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
-        image = Bitmap.createScaledBitmap(image, BitmapContext.getWidth(), BitmapContext.getHeight(), true);
-        for (int x = 1; x < image.getWidth() - 1; x++) {
-            for (int y = 1; y < image.getHeight() - 1; y++) {
-                Point p = new Point(x, y);
-                if (island.getPoints().contains(p)) {
-                    image.setPixel(x, y, Color.rgb(0, 0, 0));
-                    if (x < minX) minX = x;
-                    if (y < minY) minY = y;
-                    if (x > maxX) maxX = x;
-                    if (y > maxY) maxY = y;
-                } else {
-                    image.setPixel(x, y, Color.rgb(255, 255, 255));
-                }
-            }
-        }
-        return Bitmap.createBitmap(image, minX - 10, minY - 10, maxX - minX + 20, maxY - minY + 20);
+        image = image.copy(Bitmap.Config.ARGB_8888, true);
+        image.setPixels(island.getPixels(), 0, BitmapContext.getWidth(), 0, 0, BitmapContext.getWidth(), BitmapContext.getHeight());
+        return Bitmap.createBitmap(image, island.getMinX() - 10, island.getMinY() - 10, island.getMaxX() - island.getMinX() + 20, island.getMaxY() - island.getMinY() + 20);
     }
 
     public Bitmap createBitmapFormCameraStream(byte[] bytes) {
@@ -87,6 +68,29 @@ public class BitmapHelper {
         matrix.setRotate(90);
         Bitmap bitmap = BitmapFactory.decodeByteArray(bytes, 0, bytes.length);
         bitmap = Bitmap.createBitmap(bitmap, 0, 0, bitmap.getWidth(), bitmap.getHeight(), matrix, true);
+        return bitmap;
+    }
+
+    private Bitmap fillBitmapPixels(Bitmap bitmap, int bgColor, int contourColor, TreeSet<Point> contour) {
+        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+        int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+        Arrays.fill(pixels, bgColor);
+        for (Point p : contour) {
+            pixels[p.getX() + p.getY() * bitmap.getWidth()] = contourColor;
+        }
+        bitmap.setPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+        return bitmap;
+    }
+
+    private Bitmap fillBitmapPixelsScaledToPreview(Bitmap bitmap, int bgColor, int contourColor, TreeSet<Point> contour, int w, int h) {
+        bitmap = bitmap.copy(Bitmap.Config.ARGB_8888, true);
+        int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+        Arrays.fill(pixels, bgColor);
+        for (Point p : contour) {
+            p = new Point(p.getX() * w / BitmapContext.getWidth(), p.getY() * h / BitmapContext.getHeight());
+            pixels[p.getX() + p.getY() * bitmap.getWidth()] = contourColor;
+        }
+        bitmap.setPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
         return bitmap;
     }
 }

@@ -5,7 +5,9 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.util.Log;
 
+import com.annimon.stream.Stream;
 import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
+import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.helper.GraphHelper;
 import com.example.tatevabgaryan.graphprocessing.helper.IslandHelper;
 import com.example.tatevabgaryan.graphprocessing.model.Contour;
@@ -14,7 +16,9 @@ import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Island;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 import java.util.concurrent.ExecutorService;
@@ -33,8 +37,14 @@ public class GraphBuilder implements IGraphBuilder {
     public void getContourFromBitmap(final Bitmap bitmap) {
         final TreeSet<Point> points = new TreeSet<>(new PointComparator());
         final int[][] matrix = new int[bitmap.getWidth()][bitmap.getHeight()];
+
+//        int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+//        bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+//        final ArrayList pixelsList =Lis;
+//        Stream.of(pixelsList).forEach(p -> addInContour((Integer) p, points, matrix, pixelsList.indexOf(p)));
+
         final Bitmap grayScaled = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-        int threadCount = 20;
+        int threadCount = 5;
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             final int startH = i * bitmap.getHeight() / threadCount;
@@ -100,8 +110,8 @@ public class GraphBuilder implements IGraphBuilder {
     }
 
     @Override
-    public void numerateIslands(Context context) {
-        graphHelper.numerateIslands(graph.getIslands(), context);
+    public void numerateIslands() {
+        graphHelper.numerateIslands(graph.getIslands());
     }
 
     @Override
@@ -136,7 +146,7 @@ public class GraphBuilder implements IGraphBuilder {
                 int g = Color.green(grayScaled.getPixel(x, y));
                 int b = Color.blue(grayScaled.getPixel(x, y));
                 int mid = (r + g + b) / 3;
-                if (mid < 120) {
+                if (mid < 125) {
                     points.add(new Point(x, y));
                     matrix[x][y] = 1;
                 } else {
@@ -144,6 +154,17 @@ public class GraphBuilder implements IGraphBuilder {
                     matrix[x][y] = 0;
                 }
             }
+        }
+    }
+
+    private void addInContour(Integer pixel, TreeSet<Point> points, int[][] matrix, int index) {
+        int y = index / BitmapContext.getWidth();
+        int x = index % BitmapContext.getWidth();
+        if ((Color.red(pixel) + Color.green(pixel) + Color.red(pixel) < 120)) {
+            points.add(new Point(x, y));
+            matrix[x][y] = 1;
+        } else {
+            matrix[x][y] = 0;
         }
     }
 }

@@ -25,7 +25,7 @@ public class GraphDirector {
         builder.findIslands();
         Thread thread = new Thread(){
             public void run() {
-                builder.numerateIslands(context);
+                builder.numerateIslands();
             }
         };
         thread.start();

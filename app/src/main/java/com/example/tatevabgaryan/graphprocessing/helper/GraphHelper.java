@@ -126,28 +126,18 @@ public class GraphHelper {
         return minDistance;
     }
 
-    public void numerateIslands(List<Island> islands, final Context context) {
+    public void numerateIslands(List<Island> islands) {
         final OCRHelper ocrHelper = new OCRHelper();
         final BitmapHelper bitmapHelper = new BitmapHelper();
+
         for (final Island island : islands) {
             if (!island.isGraph()) {
-                Thread t = new Thread(new Runnable() {
-                    @Override
-                    public void run() {
-                        try {
-                            int number = ocrHelper.numberFromBitmap(bitmapHelper.createNumberBitmapFromIsland(island));
-                            island.setValue(number != 0 ? number : 2);
-                            Log.d("islandValue", island.getValue() + "");
-                        } catch (IllegalArgumentException ex) {
-                            ex.printStackTrace();
-                        }
-                    }
-                });
-                t.start();
                 try {
-                    t.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    int number = ocrHelper.numberFromBitmap(bitmapHelper.createNumberBitmapFromIsland(island));
+                    island.setValue(number != 0 ? number : 2);
+                    Log.d("islandValue", island.getValue() + "");
+                } catch (IllegalArgumentException ex) {
+                    ex.printStackTrace();
                 }
             }
         }

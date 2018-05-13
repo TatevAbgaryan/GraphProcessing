@@ -1,5 +1,7 @@
 package com.example.tatevabgaryan.graphprocessing.helper;
 
+import android.graphics.Color;
+
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.model.Contour;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
@@ -37,7 +39,11 @@ public class IslandHelper {
         // Mark this cell as visited
         visited[row][col] = true;
         island.getPoints().add(new Point(row, col));
-
+        island.getPixels()[row + col * rowSize] = Color.rgb(0, 0, 0);
+        if (row < island.getMinX()) island.setMinX(row);
+        else if (col < island.getMinY()) island.setMinY(col);
+        else if (row > island.getMaxX()) island.setMaxX(row);
+        else if (col > island.getMaxY()) island.setMaxY(col);
         // Recur for all connected neighbours
         for (int k = 0; k < 8; ++k)
             if (isSafe(M, row + rowNbr[k], col + colNbr[k], visited))

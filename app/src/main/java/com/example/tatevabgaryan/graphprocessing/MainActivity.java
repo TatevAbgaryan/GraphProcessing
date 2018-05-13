@@ -2,11 +2,9 @@ package com.example.tatevabgaryan.graphprocessing;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.RectF;
 import android.hardware.Camera;
 import android.os.Bundle;
-import android.util.Log;
+import android.util.DisplayMetrics;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -16,7 +14,6 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 
 import com.example.tatevabgaryan.graphprocessing.builder.GraphDirector;
-import com.example.tatevabgaryan.graphprocessing.camera.CameraUtils;
 import com.example.tatevabgaryan.graphprocessing.camera.HolderCallback;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.helper.BitmapHelper;
@@ -25,20 +22,16 @@ import com.example.tatevabgaryan.graphprocessing.helper.OCRHelper;
 import com.example.tatevabgaryan.graphprocessing.helper.PathHelper;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
-import com.example.tatevabgaryan.graphprocessing.ocr.Classification;
-import com.example.tatevabgaryan.graphprocessing.ocr.Classifier;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.TreeSet;
-import java.util.concurrent.Executor;
-import java.util.concurrent.Executors;
 
 
 public class MainActivity extends Activity {
-    public static final int SCALE = 5;
-    public static final int NODE_RADIUS = 5;
-    public static final int NODE_POINT_DISTANCE = 20;
+    public static final int SCALE = 10;
+    public static final int NODE_RADIUS = 3;
+    public static final int NODE_POINT_DISTANCE = 10;
 
     private SurfaceView sv;
     private SurfaceHolder holder;
@@ -51,6 +44,8 @@ public class MainActivity extends Activity {
     private double[][] shortestPaths;
     private BitmapHelper bitmapHelper = new BitmapHelper();
     private int countClick = 0;
+    private int screenWidth;
+    private int screenHeight;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,32 +63,42 @@ public class MainActivity extends Activity {
         camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
         holderCallback = new HolderCallback(camera, this);
         holder.addCallback(holderCallback);
-        final RectF prevRectF = CameraUtils.getPreviewSize(true, camera, this);
-        sv.getLayoutParams().height = (int) (prevRectF.bottom);
-        sv.getLayoutParams().width = (int) (prevRectF.right);
+//        final RectF prevRectF = CameraUtils.getPreviewSize(true, camera, this);
+//        sv.getLayoutParams().height = (int) (prevRectF.bottom);
+//        sv.getLayoutParams().width = (int) (prevRectF.right);
+
         OCRHelper.initialize(this);
+
+
+        DisplayMetrics metrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(metrics);
+        screenWidth = metrics.widthPixels;
+        screenHeight = metrics.heightPixels;
 
         sv.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {
                 countClick++;
                 if (countClick == 1) {
-                    touchPoint1 = new Point((int) event.getX() / SCALE, (int) event.getY() / SCALE);
+                    touchPoint1 = new Point((int) (event.getX() * screenWidth / sv.getWidth()), (int) (event.getY() * screenHeight / sv.getHeight()));
                 } else if (countClick % 2 == 0) {
-                    touchPoint2 = new Point((int) event.getX() / SCALE, (int) event.getY() / SCALE);
+                    touchPoint2 = new Point((int) (event.getX() * screenWidth / sv.getWidth()), (int) (event.getY() * screenHeight / sv.getHeight()));
                     camera.takePicture(null, null, new Camera.PictureCallback() {
                         @Override
                         public void onPictureTaken(byte[] bytes, Camera camera) {
-                            //camera.stopPreview();
                             Bitmap source = bitmapHelper.createBitmapFormCameraStream(bytes);
                             graph = processGraph(source);
                             PathHelper pathHelper = new PathHelper();
                             shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
                             pathHelper.fillAllPairShortestPaths(shortestPaths, graph);
-                           imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(getShortestPath()));
+                            //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getGraphIsland().getPoints()));
+//                            for(TreeSet<Point> node : getShortestPath()){
+//                                imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(node, screenWidth, screenHeight));
+//                            }
+                            imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(getShortestPath(), screenWidth, screenHeight));
                         }
                     });
                 } else {
-                    touchPoint1 = new Point((int) event.getX() / SCALE, (int) event.getY() / SCALE);
+                    touchPoint1 = new Point((int) (event.getX() * screenWidth / sv.getWidth()), (int) (event.getY() * screenHeight / sv.getHeight()));
                 }
 
                 return false;
@@ -133,6 +138,11 @@ public class MainActivity extends Activity {
 
     private List<TreeSet<Point>> getShortestPath() {
         GraphHelper graphHelper = new GraphHelper();
+        touchPoint1.setX(touchPoint1.getX() * BitmapContext.getWidth() / screenWidth);
+        touchPoint1.setY(touchPoint1.getY() * BitmapContext.getHeight() / screenHeight);
+        touchPoint2.setX(touchPoint2.getX() * BitmapContext.getWidth() / screenWidth);
+        touchPoint2.setY(touchPoint2.getY() * BitmapContext.getHeight() / screenHeight);
+
         int nodeIndex1 = graphHelper.findNearestNode(graph, touchPoint1);
         int nodeIndex2 = graphHelper.findNearestNode(graph, touchPoint2);
         List<TreeSet<Point>> nodes = graph.getNodes();
