@@ -58,7 +58,7 @@ public class OCRHelper {
             retPixels[i] = (float)((0xff - b)/255.0);
         }
         Classification res = classifier.recognize(retPixels);
-        Log.d("recognized =" , res.getLabel());
+        Log.d("ofaman recognized =" , res.getLabel());
         return  Integer.valueOf(res.getLabel());
     }
 }

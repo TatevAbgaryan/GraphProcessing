@@ -148,6 +148,7 @@ public class GraphHelper {
         double current;
         int nearestNodeIndex = -1;
         for (int i = 0; i < graph.getNodes().size(); i++) {
+            if (graph.getNodes().get(i).isEmpty()) continue;
             if ((current = getDistanceOfPoints(graph.getNodes().get(i).first(), touchPoint)) < minDistance) {
                 minDistance = current;
                 nearestNodeIndex = i;

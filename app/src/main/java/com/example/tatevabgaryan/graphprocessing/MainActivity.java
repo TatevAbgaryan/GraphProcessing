@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -24,6 +26,7 @@ import com.example.tatevabgaryan.graphprocessing.model.Graph;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.TreeSet;
 
@@ -85,19 +88,36 @@ public class MainActivity extends Activity {
                     camera.takePicture(null, null, new Camera.PictureCallback() {
                         @Override
                         public void onPictureTaken(byte[] bytes, Camera camera) {
+                            camera.startPreview();
                             Bitmap source = bitmapHelper.createBitmapFormCameraStream(bytes);
                             graph = processGraph(source);
                             PathHelper pathHelper = new PathHelper();
                             shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
                             pathHelper.fillAllPairShortestPaths(shortestPaths, graph);
-                            //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getGraphIsland().getPoints()));
-//                            for(TreeSet<Point> node : getShortestPath()){
-//                                imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(node, screenWidth, screenHeight));
-//                            }
-                            imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(getShortestPath(), screenWidth, screenHeight));
+                            List<TreeSet<Point>> pathNodes = getShortestPath();
+                            List<TreeSet<Point>> pathNodesToDraw = new ArrayList<>();
+                            final Handler handler = new Handler();
+                            pathNodesToDraw.add(pathNodes.get(0));
+                            Log.d("ofaman shortestPaths", Arrays.deepToString(shortestPaths));
+                            Runnable runnable = new Runnable() {
+                                int currentNode = 0;
+                                public void run() {
+                                    pathNodesToDraw.add(pathNodes.get(currentNode));
+                                    imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(pathNodesToDraw, screenWidth, screenHeight));
+                                    currentNode++;
+                                    if (currentNode != pathNodes.size())
+                                        handler.postDelayed(this, 500);
+                                }
+                            };
+                            handler.post(runnable);
+                            pathNodesToDraw.add(graph.getNodes().get(3));
+                            //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
+                            //imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(pathNodesToDraw, screenWidth, screenHeight));
+                            //imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(getShortestPath(), screenWidth, screenHeight));
                         }
                     });
                 } else {
+                    imageView.setImageBitmap(null);
                     touchPoint1 = new Point((int) (event.getX() * screenWidth / sv.getWidth()), (int) (event.getY() * screenHeight / sv.getHeight()));
                 }
 
@@ -129,7 +149,7 @@ public class MainActivity extends Activity {
 
     private Graph processGraph(Bitmap source) {
         source = Bitmap.createScaledBitmap(source, source.getWidth() / SCALE, source.getHeight() / SCALE, false);
-        imageView.setImageBitmap(source);
+       // imageView.setImageBitmap(source);
         BitmapContext.setHeight(source.getHeight());
         BitmapContext.setWidth(source.getWidth());
         GraphDirector graphDirector = new GraphDirector(source, MainActivity.this);
@@ -145,6 +165,10 @@ public class MainActivity extends Activity {
 
         int nodeIndex1 = graphHelper.findNearestNode(graph, touchPoint1);
         int nodeIndex2 = graphHelper.findNearestNode(graph, touchPoint2);
+        Log.d("ofaman nodeSize", graph.getNodes().size() + "");
+        Log.d("ofaman n1", nodeIndex1 + "");
+        Log.d("ofaman n2", nodeIndex2 + "");
+
         List<TreeSet<Point>> nodes = graph.getNodes();
         List<TreeSet<Point>> routeNodes = new ArrayList<>();
         double next = nodeIndex1;
@@ -152,6 +176,7 @@ public class MainActivity extends Activity {
         while (next != nodeIndex2) {
             next = shortestPaths[(int) next][nodeIndex2];
             routeNodes.add(nodes.get((int) next));
+            Log.d("ofaman next", next + "");
         }
         routeNodes.add(nodes.get(nodeIndex2));
         return routeNodes;
