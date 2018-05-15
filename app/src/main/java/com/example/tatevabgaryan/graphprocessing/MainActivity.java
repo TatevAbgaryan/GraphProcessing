@@ -97,7 +97,6 @@ public class MainActivity extends Activity {
                             List<TreeSet<Point>> pathNodes = getShortestPath();
                             List<TreeSet<Point>> pathNodesToDraw = new ArrayList<>();
                             final Handler handler = new Handler();
-                            pathNodesToDraw.add(pathNodes.get(0));
                             Log.d("ofaman shortestPaths", Arrays.deepToString(shortestPaths));
                             Runnable runnable = new Runnable() {
                                 int currentNode = 0;
@@ -105,12 +104,11 @@ public class MainActivity extends Activity {
                                     pathNodesToDraw.add(pathNodes.get(currentNode));
                                     imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(pathNodesToDraw, screenWidth, screenHeight));
                                     currentNode++;
-                                    if (currentNode != pathNodes.size())
-                                        handler.postDelayed(this, 500);
+                                    if (currentNode < pathNodes.size())
+                                        handler.post(this);
                                 }
                             };
                             handler.post(runnable);
-                            pathNodesToDraw.add(graph.getNodes().get(3));
                             //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
                             //imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(pathNodesToDraw, screenWidth, screenHeight));
                             //imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(getShortestPath(), screenWidth, screenHeight));

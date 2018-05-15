@@ -38,13 +38,8 @@ public class GraphBuilder implements IGraphBuilder {
         final TreeSet<Point> points = new TreeSet<>(new PointComparator());
         final int[][] matrix = new int[bitmap.getWidth()][bitmap.getHeight()];
 
-//        int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
-//        bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
-//        final ArrayList pixelsList =Lis;
-//        Stream.of(pixelsList).forEach(p -> addInContour((Integer) p, points, matrix, pixelsList.indexOf(p)));
-
         final Bitmap grayScaled = bitmap.copy(Bitmap.Config.ARGB_8888, true);
-        int threadCount = 5;
+        int threadCount = 50;
         Thread[] threads = new Thread[threadCount];
         for (int i = 0; i < threadCount; i++) {
             final int startH = i * bitmap.getHeight() / threadCount;
@@ -102,7 +97,7 @@ public class GraphBuilder implements IGraphBuilder {
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = i + 1; j < nodes.size(); j++) {
                 if (graphHelper.isEdge(new ArrayList<>(nodes.get(i)), new ArrayList<>(nodes.get(j)), graphContour)) {
-                    edges.add(new Edge(nodes.get(i), nodes.get(j)));
+                    edges.add(new Edge(i, j));
                 }
             }
         }
@@ -124,7 +119,7 @@ public class GraphBuilder implements IGraphBuilder {
             Island islandOfEdge = null;
             double distance;
             for (Island island : islands) {
-                if ((distance = graphHelper.getDistanceOfNumberFromEdge(island, edge)) < minDistance) {
+                if ((distance = graphHelper.getDistanceOfNumberFromEdge(island, edge, graph)) < minDistance) {
                     minDistance = distance;
                     islandOfEdge = island;
                 }
@@ -146,7 +141,7 @@ public class GraphBuilder implements IGraphBuilder {
                 int g = Color.green(grayScaled.getPixel(x, y));
                 int b = Color.blue(grayScaled.getPixel(x, y));
                 int mid = (r + g + b) / 3;
-                if (mid < 120) {
+                if (mid < 110) {
                     points.add(new Point(x, y));
                     matrix[x][y] = 1;
                 } else {

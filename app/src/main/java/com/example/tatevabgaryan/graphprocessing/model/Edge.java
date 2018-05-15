@@ -8,28 +8,28 @@ import java.util.TreeSet;
 
 public class Edge {
 
-    private TreeSet<Point> startNode;
-    private TreeSet<Point> endNode;
+    private int startNode;
+    private int endNode;
     private Island numberIsland;
 
-    public Edge(TreeSet<Point> startNode, TreeSet<Point> endNode) {
+    public Edge(int startNode, int endNode) {
         this.startNode = startNode;
         this.endNode = endNode;
     }
 
-    public TreeSet<Point> getStartNode() {
+    public int getStartNode() {
         return startNode;
     }
 
-    public void setStartNode(TreeSet<Point> startNode) {
+    public void setStartNode(int startNode) {
         this.startNode = startNode;
     }
 
-    public TreeSet<Point> getEndNode() {
+    public int getEndNode() {
         return endNode;
     }
 
-    public void setEndNode(TreeSet<Point> endNode) {
+    public void setEndNode(int endNode) {
         this.endNode = endNode;
     }
 
@@ -41,26 +41,32 @@ public class Edge {
         this.numberIsland = numberIsland;
     }
 
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
-        if (!(o instanceof Edge)) return false;
+        if (o == null || getClass() != o.getClass()) return false;
 
         Edge edge = (Edge) o;
 
-        if (getStartNode().size() != edge.getStartNode().size())
-            return false;
-        if (getEndNode().size() != edge.getEndNode().size())
-            return false;
-        return true;
+        if (startNode != edge.startNode) return false;
+        if (endNode != edge.endNode) return false;
+        return numberIsland != null ? numberIsland.equals(edge.numberIsland) : edge.numberIsland == null;
     }
 
     @Override
     public int hashCode() {
-        int result = getStartNode().hashCode();
-        result = 31 * result + getEndNode().hashCode();
-        result = 31 * result + (getNumberIsland() != null ? getNumberIsland().hashCode() : 0);
+        int result = startNode;
+        result = 31 * result + endNode;
+        result = 31 * result + (numberIsland != null ? numberIsland.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "Edge{" +
+                "startNode=" + startNode +
+                ", endNode=" + endNode +
+                ", numberIsland=" + numberIsland.getValue() +
+                '}';
     }
 }

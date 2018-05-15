@@ -22,7 +22,7 @@ public class PathHelper {
         for (int i = 0; i < shortestLengths.length; i++)
             for (int j = 0; j < shortestLengths.length; j++) {
                 shortestRoutes[i][j] = j;
-                Edge graphEdge = new Edge(nodes.get(i), nodes.get(j));
+                Edge graphEdge = new Edge(i, j);
                 int index;
                 if (i == j) {
                     shortestLengths[i][j] = 0;
