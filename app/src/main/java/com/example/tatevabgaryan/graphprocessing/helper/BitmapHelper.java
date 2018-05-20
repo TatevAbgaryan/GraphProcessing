@@ -60,7 +60,7 @@ public class BitmapHelper {
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
         image = image.copy(Bitmap.Config.ARGB_8888, true);
         image.setPixels(island.getPixels(), 0, BitmapContext.getWidth(), 0, 0, BitmapContext.getWidth(), BitmapContext.getHeight());
-        return Bitmap.createBitmap(image, island.getMinX() - 10, island.getMinY() - 10, island.getMaxX() - island.getMinX() + 20, island.getMaxY() - island.getMinY() + 20);
+        return Bitmap.createBitmap(image, island.getMinX()-3, island.getMinY()-3, island.getMaxX() - island.getMinX() + 6, island.getMaxY() - island.getMinY() +6);
     }
 
     public Bitmap createBitmapFormCameraStream(byte[] bytes) {

@@ -50,7 +50,7 @@ public class Edge {
 
         if (startNode != edge.startNode) return false;
         if (endNode != edge.endNode) return false;
-        return numberIsland != null ? numberIsland.equals(edge.numberIsland) : edge.numberIsland == null;
+        return true;
     }
 
     @Override
