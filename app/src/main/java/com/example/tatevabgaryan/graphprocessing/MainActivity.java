@@ -2,6 +2,9 @@ package com.example.tatevabgaryan.graphprocessing;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
+import android.graphics.Color;
+import android.graphics.Paint;
 import android.hardware.Camera;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,6 +17,8 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import com.example.tatevabgaryan.graphprocessing.builder.GraphDirector;
 import com.example.tatevabgaryan.graphprocessing.camera.HolderCallback;
@@ -41,15 +46,18 @@ public class MainActivity extends Activity {
     private HolderCallback holderCallback;
     private Camera camera;
     private ImageView imageView;
+    private RelativeLayout distanceLayout;
+    private TextView distance;
     private Point touchPoint1 = null;
     private Point touchPoint2 = null;
     private Graph graph;
     private double[][] shortestPaths;
+    private double[][] shortestDistances;
     private BitmapHelper bitmapHelper = new BitmapHelper();
     private int countClick = 0;
     private int screenWidth;
     private int screenHeight;
-
+    private double shortestPathDistance;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -58,6 +66,9 @@ public class MainActivity extends Activity {
                 WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
         imageView = findViewById(R.id.image_view);
+        distanceLayout = findViewById(R.id.distance_layout);
+        distance = findViewById(R.id.distance);
+        distanceLayout.setVisibility(View.GONE);
         sv = findViewById(R.id.surfaceView);
         holder = sv.getHolder();
         holder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
@@ -66,12 +77,7 @@ public class MainActivity extends Activity {
         camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
         holderCallback = new HolderCallback(camera, this);
         holder.addCallback(holderCallback);
-//        final RectF prevRectF = CameraUtils.getPreviewSize(true, camera, this);
-//        sv.getLayoutParams().height = (int) (prevRectF.bottom);
-//        sv.getLayoutParams().width = (int) (prevRectF.right);
-
         OCRHelper.initialize(this);
-
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -80,6 +86,8 @@ public class MainActivity extends Activity {
 
         sv.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {
+                distanceLayout.setVisibility(View.GONE);
+                highlightPoint(new Point((int)event.getX(), (int)event.getY()));
                 countClick++;
                 if (countClick == 1) {
                     touchPoint1 = new Point((int) (event.getX() * screenWidth / sv.getWidth()), (int) (event.getY() * screenHeight / sv.getHeight()));
@@ -93,7 +101,8 @@ public class MainActivity extends Activity {
                             graph = processGraph(source);
                             PathHelper pathHelper = new PathHelper();
                             shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
-                            pathHelper.fillAllPairShortestPaths(shortestPaths, graph);
+                            shortestDistances = new double[graph.getNodes().size()][graph.getNodes().size()];
+                            pathHelper.fillAllPairShortestPaths(shortestPaths, shortestDistances, graph);
                             List<TreeSet<Point>> pathNodes = getShortestPath();
                             List<TreeSet<Point>> pathNodesToDraw = new ArrayList<>();
                             final Handler handler = new Handler();
@@ -108,17 +117,13 @@ public class MainActivity extends Activity {
                                         handler.post(this);
                                 }
                             };
+                            setDistanceImage();
                             handler.post(runnable);
-                            //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
-                            //imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(pathNodesToDraw, screenWidth, screenHeight));
-                            //imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(getShortestPath(), screenWidth, screenHeight));
                         }
                     });
                 } else {
-                    imageView.setImageBitmap(null);
                     touchPoint1 = new Point((int) (event.getX() * screenWidth / sv.getWidth()), (int) (event.getY() * screenHeight / sv.getHeight()));
                 }
-
                 return false;
             }
         });
@@ -133,9 +138,7 @@ public class MainActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        if (camera != null)
-            camera.release();
-        camera = null;
+        releaseCameraAndPreview();
     }
 
     private void releaseCameraAndPreview() {
@@ -147,7 +150,6 @@ public class MainActivity extends Activity {
 
     private Graph processGraph(Bitmap source) {
         source = Bitmap.createScaledBitmap(source, source.getWidth() / SCALE, source.getHeight() / SCALE, false);
-       // imageView.setImageBitmap(source);
         BitmapContext.setHeight(source.getHeight());
         BitmapContext.setWidth(source.getWidth());
         GraphDirector graphDirector = new GraphDirector(source, MainActivity.this);
@@ -163,6 +165,7 @@ public class MainActivity extends Activity {
 
         int nodeIndex1 = graphHelper.findNearestNode(graph, touchPoint1);
         int nodeIndex2 = graphHelper.findNearestNode(graph, touchPoint2);
+        shortestPathDistance = shortestDistances[nodeIndex1][nodeIndex2];
         Log.d("ofaman nodeSize", graph.getNodes().size() + "");
         Log.d("ofaman n1", nodeIndex1 + "");
         Log.d("ofaman n2", nodeIndex2 + "");
@@ -178,5 +181,25 @@ public class MainActivity extends Activity {
         }
         routeNodes.add(nodes.get(nodeIndex2));
         return routeNodes;
+    }
+
+    private void highlightPoint(Point point){
+        Bitmap bm = Bitmap.createBitmap(sv.getWidth(), sv.getHeight(), Bitmap.Config.ARGB_8888);
+        Canvas c = new Canvas(bm);
+        Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
+        p.setColor(Color.argb(190, 220,20,60));
+        c.drawCircle(point.getX(), point.getY(), 30, p);
+        imageView.setImageBitmap(bm);
+        Handler handler = new Handler();
+        Runnable r = new Runnable() {
+            public void run() {
+                imageView.setImageBitmap(null);
+            }
+        };
+        handler.postDelayed(r, 500);
+    }
+    private void setDistanceImage(){
+        distance.setText(String.valueOf(shortestPathDistance));
+        distanceLayout.setVisibility(View.VISIBLE);
     }
 }

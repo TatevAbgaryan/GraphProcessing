@@ -47,7 +47,7 @@ public class BitmapHelper {
             for (int j = 0; j<image.getHeight(); j++){
                 for(Point p : nodeCenters) {
                     if (graphHelper.getDistanceOfPoints(p, new Point(i,j)) < MainActivity.NODE_POINT_DISTANCE){
-                        image.setPixel(i, j, Color.GREEN);
+                        image.setPixel(i, j, Color.parseColor("#339933"));
                     }
                 }
             }

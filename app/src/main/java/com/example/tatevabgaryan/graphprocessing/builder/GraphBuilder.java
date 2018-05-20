@@ -152,14 +152,4 @@ public class GraphBuilder implements IGraphBuilder {
         }
     }
 
-    private void addInContour(Integer pixel, TreeSet<Point> points, int[][] matrix, int index) {
-        int y = index / BitmapContext.getWidth();
-        int x = index % BitmapContext.getWidth();
-        if ((Color.red(pixel) + Color.green(pixel) + Color.red(pixel) < 120)) {
-            points.add(new Point(x, y));
-            matrix[x][y] = 1;
-        } else {
-            matrix[x][y] = 0;
-        }
-    }
 }

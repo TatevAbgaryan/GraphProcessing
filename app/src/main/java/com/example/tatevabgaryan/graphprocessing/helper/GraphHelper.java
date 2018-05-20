@@ -113,7 +113,6 @@ public class GraphHelper {
     }
 
     public double getDistanceOfNumberFromEdge(Island island, Edge edge, Graph graph) {
-
         int midPX = (graph.getNodes().get(edge.getStartNode()).first().getX() + graph.getNodes().get(edge.getEndNode()).first().getX()) / 2;
         int midPY = (graph.getNodes().get(edge.getStartNode()).first().getY() + graph.getNodes().get(edge.getEndNode()).first().getY()) / 2;
         Point edgeMidPoint = new Point(midPX, midPY);
