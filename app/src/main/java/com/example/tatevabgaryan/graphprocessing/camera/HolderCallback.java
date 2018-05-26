@@ -35,8 +35,6 @@ public class HolderCallback implements SurfaceHolder.Callback {
                     size = allSizes.get(i);
             }
             p.setPictureSize(size.width, size.height);
-//            p.setExposureCompensation(p.getMaxExposureCompensation());
-
             if(p.isAutoExposureLockSupported()) {
                 p.setAutoExposureLock(false);
             }
