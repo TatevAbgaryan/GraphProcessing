@@ -46,7 +46,7 @@ public class GraphHelper {
 
     private boolean containsApprox(TreeSet<Point> contour, Point linePoint) {
         for (Point p : contour) {
-            if (getDistanceOfPoints(p, linePoint) < 10) {
+            if (getDistanceOfPoints(p, linePoint) < 3) {
                 return true;
             }
         }
@@ -113,17 +113,40 @@ public class GraphHelper {
     }
 
     public double getDistanceOfNumberFromEdge(Island island, Edge edge, Graph graph) {
-        int midPX = (graph.getNodes().get(edge.getStartNode()).first().getX() + graph.getNodes().get(edge.getEndNode()).first().getX()) / 2;
-        int midPY = (graph.getNodes().get(edge.getStartNode()).first().getY() + graph.getNodes().get(edge.getEndNode()).first().getY()) / 2;
-        Point edgeMidPoint = new Point(midPX, midPY);
         double minDistance = Double.MAX_VALUE;
         double currentDistance;
+        ArrayList<Point> nodePointes = new ArrayList();
+        nodePointes.addAll(graph.getNodes().get(edge.getStartNode()));
+        Point P1 = nodePointes.get(nodePointes.size() / 2);
+        nodePointes = new ArrayList<>();
+        nodePointes.addAll(graph.getNodes().get(edge.getEndNode()));
+        Point P2 = nodePointes.get(nodePointes.size() / 2);
+
         for (Point p : island.getPoints()) {
-            if ((currentDistance = getDistanceOfPoints(p, edgeMidPoint)) < minDistance) {
+            if ((currentDistance = getPointDistanceFromLine(P1, P2, p)) <= minDistance) {
                 minDistance = currentDistance;
             }
         }
+
         return minDistance;
+    }
+
+    private double getPointDistanceFromLine(Point p1, Point p2, Point islandPoint) {
+        int x0 = islandPoint.getX();
+        int y0 = islandPoint.getY();
+        int x1 = p1.getX();
+        int y1 = p1.getY();
+        int x2 = p2.getX();
+        int y2 = p2.getY();
+        double h = Math.abs((y2 - y1) * x0 - (x2 - x1) * y0 + x2 * y1 - y2 * x1) / Math.sqrt(Math.pow((y2 - y1), 2) + Math.pow((x2 - x1), 2));
+
+        //check if height is out og line return max
+        double k1 = getDistanceOfPoints(p1, islandPoint);
+        double k2 = getDistanceOfPoints(p2, islandPoint);
+        double k = getDistanceOfPoints(p1, p2);
+        if(Math.sqrt(k1*k1 - h*h) + Math.sqrt(k2*k2 - h*h) > k)
+            return Double.MAX_VALUE;
+        return h;
     }
 
     public void numerateIslands(List<Island> islands) {

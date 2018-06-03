@@ -96,7 +96,7 @@ public class GraphBuilder implements IGraphBuilder {
         List<Edge> edges = new ArrayList<>();
         for (int i = 0; i < nodes.size(); i++) {
             for (int j = i + 1; j < nodes.size(); j++) {
-                if (graphHelper.isEdge(new ArrayList<>(nodes.get(i)), new ArrayList<>(nodes.get(j)), graphContour)) {
+                if ((graphHelper.isEdge(new ArrayList<>(nodes.get(i)), new ArrayList<>(nodes.get(j)), graphContour))) {
                     edges.add(new Edge(i, j));
                 }
             }
@@ -119,7 +119,7 @@ public class GraphBuilder implements IGraphBuilder {
             Island islandOfEdge = null;
             double distance;
             for (Island island : islands) {
-                if ((distance = graphHelper.getDistanceOfNumberFromEdge(island, edge, graph)) < minDistance) {
+                if ((distance = graphHelper.getDistanceOfNumberFromEdge(island, edge, graph)) <= minDistance) {
                     minDistance = distance;
                     islandOfEdge = island;
                 }
@@ -141,7 +141,7 @@ public class GraphBuilder implements IGraphBuilder {
                 int g = Color.green(grayScaled.getPixel(x, y));
                 int b = Color.blue(grayScaled.getPixel(x, y));
                 int mid = (r + g + b) / 3;
-                if (mid < 110) {
+                if (mid < 115) {
                     points.add(new Point(x, y));
                     matrix[x][y] = 1;
                 } else {

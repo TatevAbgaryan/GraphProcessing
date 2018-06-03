@@ -1,7 +1,10 @@
 package com.example.tatevabgaryan.graphprocessing.helper;
 
+import android.util.Log;
+
 import com.example.tatevabgaryan.graphprocessing.model.Edge;
 import com.example.tatevabgaryan.graphprocessing.model.Graph;
+import com.example.tatevabgaryan.graphprocessing.model.Island;
 import com.example.tatevabgaryan.graphprocessing.model.Point;
 
 import java.util.Arrays;
@@ -26,7 +29,10 @@ public class PathHelper {
                 if (i == j) {
                     shortestDistances[i][j] = 0;
                 } else if ((index = edges.indexOf(graphEdge)) != -1) {
-                    int value = edges.get(index).getNumberIsland().getValue();
+                    Edge e = edges.get(index);
+                    Log.d("edge = ",  e.getStartNode() + " " + e.getEndNode());
+                    Island numberIsland = e.getNumberIsland();
+                    int value = numberIsland.getValue();
                     shortestDistances[i][j] = value;
                     shortestDistances[j][i] = value;
                 } else {

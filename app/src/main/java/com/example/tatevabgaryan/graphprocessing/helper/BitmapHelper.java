@@ -2,9 +2,11 @@ package com.example.tatevabgaryan.graphprocessing.helper;
 
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.YuvImage;
 import android.hardware.Camera;
@@ -39,14 +41,14 @@ public class BitmapHelper {
         for (TreeSet<Point> nodePoints : nodes) {
             ArrayList<Point> points = new ArrayList<>();
             points.addAll(nodePoints);
-            nodeCenters.add(points.get(points.size()/2));
+            nodeCenters.add(points.get(points.size() / 2));
         }
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
         GraphHelper graphHelper = new GraphHelper();
-        for(int i = 0; i<image.getWidth(); i++){
-            for (int j = 0; j<image.getHeight(); j++){
-                for(Point p : nodeCenters) {
-                    if (graphHelper.getDistanceOfPoints(p, new Point(i,j)) < MainActivity.NODE_POINT_DISTANCE){
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                for (Point p : nodeCenters) {
+                    if (graphHelper.getDistanceOfPoints(p, new Point(i, j)) < MainActivity.NODE_POINT_DISTANCE) {
                         image.setPixel(i, j, Color.parseColor("#339933"));
                     }
                 }
@@ -56,11 +58,40 @@ public class BitmapHelper {
         return image;
     }
 
+    public Bitmap createBitmapFromNodesWithEdges(List<TreeSet<Point>> nodes, int w, int h) {
+        List<Point> nodeCenters = new ArrayList<>();
+        for (TreeSet<Point> nodePoints : nodes) {
+            ArrayList<Point> points = new ArrayList<>();
+            points.addAll(nodePoints);
+            nodeCenters.add(points.get(points.size() / 2));
+        }
+        Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
+        GraphHelper graphHelper = new GraphHelper();
+        for (int i = 0; i < image.getWidth(); i++) {
+            for (int j = 0; j < image.getHeight(); j++) {
+                for (Point p : nodeCenters) {
+                    if (graphHelper.getDistanceOfPoints(p, new Point(i, j)) < MainActivity.NODE_POINT_DISTANCE) {
+                        image.setPixel(i, j, Color.parseColor("#339933"));
+                    }
+                }
+            }
+        }
+        Canvas canvas = new Canvas(image);
+        Paint paint = new Paint();
+        paint.setAntiAlias(true);
+        paint.setColor(Color.parseColor("#339933"));
+        for (int i = 0; i < nodeCenters.size() - 1; i++) {
+            canvas.drawLine(nodeCenters.get(i).getX(), nodeCenters.get(i).getY(), nodeCenters.get(i+1).getX(), nodeCenters.get(i+1).getY(), paint);
+        }
+        image = Bitmap.createScaledBitmap(image, w, h, true);
+        return image;
+    }
+
     public Bitmap createNumberBitmapFromIsland(Island island) {
         Bitmap image = Bitmap.createBitmap(BitmapContext.getWidth(), BitmapContext.getHeight(), Bitmap.Config.ARGB_8888);
         image = image.copy(Bitmap.Config.ARGB_8888, true);
         image.setPixels(island.getPixels(), 0, BitmapContext.getWidth(), 0, 0, BitmapContext.getWidth(), BitmapContext.getHeight());
-        return Bitmap.createBitmap(image, island.getMinX()-3, island.getMinY()-3, island.getMaxX() - island.getMinX() + 6, island.getMaxY() - island.getMinY() +6);
+        return Bitmap.createBitmap(image, island.getMinX() - 3, island.getMinY() - 3, island.getMaxX() - island.getMinX() + 6, island.getMaxY() - island.getMinY() + 6);
     }
 
     public Bitmap createBitmapFormCameraStream(byte[] bytes) {

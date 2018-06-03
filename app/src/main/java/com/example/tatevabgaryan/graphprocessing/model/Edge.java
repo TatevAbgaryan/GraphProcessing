@@ -1,5 +1,6 @@
 package com.example.tatevabgaryan.graphprocessing.model;
 
+import java.util.List;
 import java.util.TreeSet;
 
 /**
@@ -11,6 +12,7 @@ public class Edge {
     private int startNode;
     private int endNode;
     private Island numberIsland;
+    private List<Point> edgePoints;
 
     public Edge(int startNode, int endNode) {
         this.startNode = startNode;
@@ -41,6 +43,14 @@ public class Edge {
         this.numberIsland = numberIsland;
     }
 
+    public List<Point> getEdgePoints() {
+        return edgePoints;
+    }
+
+    public void setEdgePoints(List<Point> edgePoints) {
+        this.edgePoints = edgePoints;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -63,10 +73,11 @@ public class Edge {
 
     @Override
     public String toString() {
+        int value = numberIsland != null? numberIsland.getValue() : null;
         return "Edge{" +
                 "startNode=" + startNode +
                 ", endNode=" + endNode +
-                ", numberIsland=" + numberIsland.getValue() +
+                ", numberIsland=" + value +
                 '}';
     }
 }

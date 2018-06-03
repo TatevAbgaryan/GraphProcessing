@@ -58,6 +58,7 @@ public class MainActivity extends Activity {
     private int screenWidth;
     private int screenHeight;
     private double shortestPathDistance;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,7 +88,7 @@ public class MainActivity extends Activity {
         sv.setOnTouchListener(new View.OnTouchListener() {
             public boolean onTouch(View v, final MotionEvent event) {
                 distanceLayout.setVisibility(View.GONE);
-                highlightPoint(new Point((int)event.getX(), (int)event.getY()));
+                highlightPoint(new Point((int) event.getX(), (int) event.getY()));
                 countClick++;
                 if (countClick == 1) {
                     touchPoint1 = new Point((int) (event.getX() * screenWidth / sv.getWidth()), (int) (event.getY() * screenHeight / sv.getHeight()));
@@ -109,12 +110,17 @@ public class MainActivity extends Activity {
                             Log.d("ofaman shortestPaths", Arrays.deepToString(shortestPaths));
                             Runnable runnable = new Runnable() {
                                 int currentNode = 0;
+
                                 public void run() {
                                     pathNodesToDraw.add(pathNodes.get(currentNode));
                                     imageView.setImageBitmap(bitmapHelper.createBitmapFromNodes(pathNodesToDraw, screenWidth, screenHeight));
                                     currentNode++;
                                     if (currentNode < pathNodes.size())
                                         handler.post(this);
+                                    else
+                                        //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
+                                    imageView.setImageBitmap(bitmapHelper.createBitmapFromNodesWithEdges(pathNodes, screenWidth, screenHeight));
+
                                 }
                             };
                             setDistanceImage();
@@ -132,13 +138,18 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
+        //setContentView(R.layout.activity_main);
+
+       // releaseCameraAndPreview();
+        camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
+        holderCallback = new HolderCallback(camera, this);
+        holder.addCallback(holderCallback);
         super.onResume();
     }
 
     @Override
     protected void onPause() {
         super.onPause();
-        releaseCameraAndPreview();
     }
 
     private void releaseCameraAndPreview() {
@@ -179,15 +190,14 @@ public class MainActivity extends Activity {
             routeNodes.add(nodes.get((int) next));
             Log.d("ofaman next", next + "");
         }
-        routeNodes.add(nodes.get(nodeIndex2));
         return routeNodes;
     }
 
-    private void highlightPoint(Point point){
+    private void highlightPoint(Point point) {
         Bitmap bm = Bitmap.createBitmap(sv.getWidth(), sv.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(bm);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setColor(Color.argb(190, 220,20,60));
+        p.setColor(Color.argb(190, 220, 20, 60));
         c.drawCircle(point.getX(), point.getY(), 30, p);
         imageView.setImageBitmap(bm);
         Handler handler = new Handler();
@@ -198,8 +208,9 @@ public class MainActivity extends Activity {
         };
         handler.postDelayed(r, 500);
     }
-    private void setDistanceImage(){
-        distance.setText(String.valueOf(shortestPathDistance));
+
+    private void setDistanceImage() {
+        distance.setText(String.valueOf((int) shortestPathDistance));
         distanceLayout.setVisibility(View.VISIBLE);
     }
 }

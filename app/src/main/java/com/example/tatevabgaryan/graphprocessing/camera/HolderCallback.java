@@ -34,8 +34,8 @@ public class HolderCallback implements SurfaceHolder.Callback {
                 if (allSizes.get(i).width > size.width)
                     size = allSizes.get(i);
             }
+            p.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE);
             p.setPictureSize(size.width, size.height);
-//            p.setExposureCompensation(p.getMaxExposureCompensation());
 
             if(p.isAutoExposureLockSupported()) {
                 p.setAutoExposureLock(false);
