@@ -17,11 +17,13 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
+import android.widget.ListPopupWindow;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.tatevabgaryan.graphprocessing.builder.GraphDirector;
 import com.example.tatevabgaryan.graphprocessing.camera.HolderCallback;
+import com.example.tatevabgaryan.graphprocessing.comparator.PointComparator;
 import com.example.tatevabgaryan.graphprocessing.context.BitmapContext;
 import com.example.tatevabgaryan.graphprocessing.helper.BitmapHelper;
 import com.example.tatevabgaryan.graphprocessing.helper.GraphHelper;
@@ -100,6 +102,7 @@ public class MainActivity extends Activity {
                             camera.startPreview();
                             Bitmap source = bitmapHelper.createBitmapFormCameraStream(bytes);
                             graph = processGraph(source);
+
                             PathHelper pathHelper = new PathHelper();
                             shortestPaths = new double[graph.getNodes().size()][graph.getNodes().size()];
                             shortestDistances = new double[graph.getNodes().size()][graph.getNodes().size()];
@@ -117,7 +120,7 @@ public class MainActivity extends Activity {
                                     currentNode++;
                                     if (currentNode < pathNodes.size())
                                         handler.post(this);
-                                    else
+                                    else if( pathNodes.size() > 2)
                                         //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
                                     imageView.setImageBitmap(bitmapHelper.createBitmapFromNodesWithEdges(pathNodes, screenWidth, screenHeight));
 
@@ -138,9 +141,6 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onResume() {
-        //setContentView(R.layout.activity_main);
-
-       // releaseCameraAndPreview();
         camera = Camera.open(Camera.CameraInfo.CAMERA_FACING_BACK);
         holderCallback = new HolderCallback(camera, this);
         holder.addCallback(holderCallback);

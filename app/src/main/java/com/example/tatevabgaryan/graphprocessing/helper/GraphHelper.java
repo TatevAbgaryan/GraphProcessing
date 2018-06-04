@@ -21,26 +21,46 @@ import java.util.TreeSet;
 public class GraphHelper {
 
     public boolean isEdge(final List<Point> n1, final List<Point> n2, final TreeSet<Point> contour) {
-        for (Point p1 : n1) {
-            for (Point p2 : n2) {
-                boolean smallerX = p1.getX() < p2.getX();
-                final int x1 = smallerX ? p1.getX() : p2.getX(), x2 = smallerX ? p2.getX() : p1.getX(),
-                        y1 = smallerX ? p1.getY() : p2.getY(),
-                        y2 = smallerX ? p2.getY() : p1.getY();
-                boolean foundY = false;
-                for (int i = x1 + 1; i <= x2 - 1; i++) {
-                    double y = y2 - (double) ((x2 - i) * (y2 - y1)) / (x2 - x1);
-                    if (isInteger(y)) {
-                        foundY = true;
-                        if (!containsApprox(contour, new Point(i, (int) y)))
-                            return false;
-                    }
-                    if (foundY && i == x2 - 1) {
-                        return true;
-                    }
-                }
+
+        ArrayList<Point> points = new ArrayList<>();
+        points.addAll(n1);
+        Point center1 = points.get(points.size() / 2);
+
+        for (Point p2 : n2) {
+            List<Point> edgePoints = getPossibleEdge(center1, p2);
+            int size = edgePoints.size();
+            edgePoints.retainAll(contour);
+            if (edgePoints.size() > 3* size / 4) {
+                return true;
             }
         }
+//        for (Point p1 : n1) {
+//            for (Point p2 : n2) {
+//                boolean smallerX = p1.getX() < p2.getX();
+//                final int x1 = smallerX ? p1.getX() : p2.getX(), x2 = smallerX ? p2.getX() : p1.getX(),
+//                        y1 = smallerX ? p1.getY() : p2.getY(),
+//                        y2 = smallerX ? p2.getY() : p1.getY();
+//                if(contour.containsAll(getPossibleEdge(p1, p2))){
+//                    return true;
+//                }
+////                boolean smallerX = p1.getX() < p2.getX();
+////                final int x1 = smallerX ? p1.getX() : p2.getX(), x2 = smallerX ? p2.getX() : p1.getX(),
+////                        y1 = smallerX ? p1.getY() : p2.getY(),
+////                        y2 = smallerX ? p2.getY() : p1.getY();
+////                boolean foundY = false;
+////                for (int i = x1 + 1; i <= x2 - 1; i++) {
+////                    double y = y2 - (double) ((x2 - i) * (y2 - y1)) / (x2 - x1);
+////                    if (isInteger(y)) {
+////                        foundY = true;
+////                        if (!containsApprox(contour, new Point(i, (int) y)))
+////                            return false;
+////                    }
+////                    if (foundY && i == x2 - 1) {
+////                        return true;
+////                    }
+////                }
+//            }
+//        }
         return false;
     }
 
@@ -179,4 +199,41 @@ public class GraphHelper {
         }
         return nearestNodeIndex;
     }
+
+    public List<Point> getPossibleEdge(Point p1, Point p2) {
+        int x = p1.getX();
+        int y = p1.getY();
+        int x2 = p2.getX();
+        int y2 = p2.getY();
+        List<Point> points = new ArrayList<>();
+        int w = x2 - x ;
+        int h = y2 - y ;
+        int dx1 = 0, dy1 = 0, dx2 = 0, dy2 = 0 ;
+        if (w<0) dx1 = -1 ; else if (w>0) dx1 = 1 ;
+        if (h<0) dy1 = -1 ; else if (h>0) dy1 = 1 ;
+        if (w<0) dx2 = -1 ; else if (w>0) dx2 = 1 ;
+        int longest = Math.abs(w) ;
+        int shortest = Math.abs(h) ;
+        if (!(longest>shortest)) {
+            longest = Math.abs(h) ;
+            shortest = Math.abs(w) ;
+            if (h<0) dy2 = -1 ; else if (h>0) dy2 = 1 ;
+            dx2 = 0 ;
+        }
+        int numerator = longest >> 1 ;
+        for (int i=0;i<=longest;i++) {
+            points.add(new Point(x,y));
+            numerator += shortest ;
+            if (!(numerator<longest)) {
+                numerator -= longest ;
+                x += dx1 ;
+                y += dy1 ;
+            } else {
+                x += dx2 ;
+                y += dy2 ;
+            }
+        }
+        return points;
+    }
+
 }
