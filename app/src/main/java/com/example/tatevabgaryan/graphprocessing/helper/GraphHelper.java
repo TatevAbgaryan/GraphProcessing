@@ -1,6 +1,5 @@
 package com.example.tatevabgaryan.graphprocessing.helper;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.example.tatevabgaryan.graphprocessing.MainActivity;
@@ -26,56 +25,14 @@ public class GraphHelper {
         points.addAll(n1);
         Point center1 = points.get(points.size() / 2);
 
-        for (Point p2 : n2) {
+        for (int i = 0; i < n2.size(); i+=2) {
+            Point p2 = n2.get(i);
             List<Point> edgePoints = getPossibleEdge(center1, p2);
             int size = edgePoints.size();
             edgePoints.retainAll(contour);
             if (edgePoints.size() > 3* size / 4) {
                 return true;
             }
-        }
-//        for (Point p1 : n1) {
-//            for (Point p2 : n2) {
-//                boolean smallerX = p1.getX() < p2.getX();
-//                final int x1 = smallerX ? p1.getX() : p2.getX(), x2 = smallerX ? p2.getX() : p1.getX(),
-//                        y1 = smallerX ? p1.getY() : p2.getY(),
-//                        y2 = smallerX ? p2.getY() : p1.getY();
-//                if(contour.containsAll(getPossibleEdge(p1, p2))){
-//                    return true;
-//                }
-////                boolean smallerX = p1.getX() < p2.getX();
-////                final int x1 = smallerX ? p1.getX() : p2.getX(), x2 = smallerX ? p2.getX() : p1.getX(),
-////                        y1 = smallerX ? p1.getY() : p2.getY(),
-////                        y2 = smallerX ? p2.getY() : p1.getY();
-////                boolean foundY = false;
-////                for (int i = x1 + 1; i <= x2 - 1; i++) {
-////                    double y = y2 - (double) ((x2 - i) * (y2 - y1)) / (x2 - x1);
-////                    if (isInteger(y)) {
-////                        foundY = true;
-////                        if (!containsApprox(contour, new Point(i, (int) y)))
-////                            return false;
-////                    }
-////                    if (foundY && i == x2 - 1) {
-////                        return true;
-////                    }
-////                }
-//            }
-//        }
-        return false;
-    }
-
-    private boolean containsApprox(TreeSet<Point> contour, Point linePoint) {
-        for (Point p : contour) {
-            if (getDistanceOfPoints(p, linePoint) < 3) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private boolean isInteger(double y) {
-        if ((y == Math.floor(y)) && !Double.isInfinite(y)) {
-            return true;
         }
         return false;
     }
@@ -200,6 +157,7 @@ public class GraphHelper {
         return nearestNodeIndex;
     }
 
+    // Bresenham algorithm
     public List<Point> getPossibleEdge(Point p1, Point p2) {
         int x = p1.getX();
         int y = p1.getY();
