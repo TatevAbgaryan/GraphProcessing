@@ -25,8 +25,8 @@ public class GraphHelper {
 //        points.addAll(n1);
 //        Point center1 = points.get(points.size() / 2);
 
-        for (int i = 0; i < n2.size(); i+=6) {
-            for (int j = 0; j < n1.size(); j+=6) {
+        for (int i = 0; i < n2.size(); i+=7) {
+            for (int j = 0; j < n1.size(); j+=7) {
                 Point p2 = n2.get(i);
                 Point p1 = n1.get(j);
                 List<Point> edgePoints = getPossibleEdge(p1, p2);

@@ -49,7 +49,8 @@ public class BitmapHelper {
             for (int j = 0; j < image.getHeight(); j++) {
                 for (Point p : nodeCenters) {
                     if (graphHelper.getDistanceOfPoints(p, new Point(i, j)) < MainActivity.NODE_POINT_DISTANCE) {
-                        image.setPixel(i, j, Color.parseColor("#339933"));
+                        //image.setPixel(i, j, Color.parseColor("#339933"));
+                        image.setPixel(i, j, Color.GREEN);
                     }
                 }
             }
@@ -71,7 +72,8 @@ public class BitmapHelper {
             for (int j = 0; j < image.getHeight(); j++) {
                 for (Point p : nodeCenters) {
                     if (graphHelper.getDistanceOfPoints(p, new Point(i, j)) < MainActivity.NODE_POINT_DISTANCE) {
-                        image.setPixel(i, j, Color.parseColor("#339933"));
+                        //image.setPixel(i, j, Color.parseColor("#339933"));
+                         image.setPixel(i, j, Color.GREEN);
                     }
                 }
             }
@@ -79,7 +81,8 @@ public class BitmapHelper {
         Canvas canvas = new Canvas(image);
         Paint paint = new Paint();
         paint.setAntiAlias(true);
-        paint.setColor(Color.parseColor("#339933"));
+       // paint.setColor(Color.parseColor("#339933"));
+        paint.setColor(Color.GREEN);
         for (int i = 0; i < nodeCenters.size() - 1; i++) {
             canvas.drawLine(nodeCenters.get(i).getX(), nodeCenters.get(i).getY(), nodeCenters.get(i+1).getX(), nodeCenters.get(i+1).getY(), paint);
         }

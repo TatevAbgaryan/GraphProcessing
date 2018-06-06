@@ -39,9 +39,9 @@ import java.util.TreeSet;
 
 
 public class MainActivity extends Activity {
-    public static final int SCALE = 12;
+    public static final int SCALE = 13;
     public static final int NODE_RADIUS = 3;
-    public static final int NODE_POINT_DISTANCE = 8;
+    public static final int NODE_POINT_DISTANCE = 9;
 
     private SurfaceView sv;
     private SurfaceHolder holder;
@@ -196,7 +196,8 @@ public class MainActivity extends Activity {
         Bitmap bm = Bitmap.createBitmap(sv.getWidth(), sv.getHeight(), Bitmap.Config.ARGB_8888);
         Canvas c = new Canvas(bm);
         Paint p = new Paint(Paint.ANTI_ALIAS_FLAG);
-        p.setColor(Color.argb(190, 220, 20, 60));
+        p.setColor(Color.RED);
+       // p.setColor(Color.argb(190, 220, 20, 60));
         c.drawCircle(point.getX(), point.getY(), 30, p);
         imageView.setImageBitmap(bm);
         Handler handler = new Handler();
