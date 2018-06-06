@@ -39,9 +39,9 @@ import java.util.TreeSet;
 
 
 public class MainActivity extends Activity {
-    public static final int SCALE = 10;
+    public static final int SCALE = 12;
     public static final int NODE_RADIUS = 3;
-    public static final int NODE_POINT_DISTANCE = 10;
+    public static final int NODE_POINT_DISTANCE = 8;
 
     private SurfaceView sv;
     private SurfaceHolder holder;
@@ -120,8 +120,7 @@ public class MainActivity extends Activity {
                                     currentNode++;
                                     if (currentNode < pathNodes.size())
                                         handler.post(this);
-                                    else if (pathNodes.size() > 2)
-                                        //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
+                                    else
                                         imageView.setImageBitmap(bitmapHelper.createBitmapFromNodesWithEdges(pathNodes, screenWidth, screenHeight));
 
                                 }
