@@ -120,9 +120,9 @@ public class MainActivity extends Activity {
                                     currentNode++;
                                     if (currentNode < pathNodes.size())
                                         handler.post(this);
-                                    else if( pathNodes.size() > 2)
+                                    else if (pathNodes.size() > 2)
                                         //imageView.setImageBitmap(bitmapHelper.createBitmapFromPoint(graph.getContour().getPoints()));
-                                    imageView.setImageBitmap(bitmapHelper.createBitmapFromNodesWithEdges(pathNodes, screenWidth, screenHeight));
+                                        imageView.setImageBitmap(bitmapHelper.createBitmapFromNodesWithEdges(pathNodes, screenWidth, screenHeight));
 
                                 }
                             };
@@ -210,7 +210,9 @@ public class MainActivity extends Activity {
     }
 
     private void setDistanceImage() {
-        distance.setText(String.valueOf((int) shortestPathDistance));
-        distanceLayout.setVisibility(View.VISIBLE);
+        if (shortestPathDistance != Double.MAX_VALUE) {
+            distance.setText(String.valueOf((int) shortestPathDistance));
+            distanceLayout.setVisibility(View.VISIBLE);
+        }
     }
 }

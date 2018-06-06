@@ -21,17 +21,20 @@ public class GraphHelper {
 
     public boolean isEdge(final List<Point> n1, final List<Point> n2, final TreeSet<Point> contour) {
 
-        ArrayList<Point> points = new ArrayList<>();
-        points.addAll(n1);
-        Point center1 = points.get(points.size() / 2);
+//        ArrayList<Point> points = new ArrayList<>();
+//        points.addAll(n1);
+//        Point center1 = points.get(points.size() / 2);
 
-        for (int i = 0; i < n2.size(); i+=2) {
-            Point p2 = n2.get(i);
-            List<Point> edgePoints = getPossibleEdge(center1, p2);
-            int size = edgePoints.size();
-            edgePoints.retainAll(contour);
-            if (edgePoints.size() > 3* size / 4) {
-                return true;
+        for (int i = 0; i < n2.size(); i+=3) {
+            for (int j = 0; j < n1.size(); j+=3) {
+                Point p2 = n2.get(i);
+                Point p1 = n1.get(j);
+                List<Point> edgePoints = getPossibleEdge(p1, p2);
+                int size = edgePoints.size();
+                edgePoints.retainAll(contour);
+                if (edgePoints.size() > 3 * size / 5) {
+                    return true;
+                }
             }
         }
         return false;
